@@ -70,3 +70,27 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+
+# Unity Asset Store
+Assets/Best HTTP.meta
+Assets/Best HTTP/
+Assets/OpenCVForUnity/
+Assets/OpenCVForUnity.meta
+Assets/JsonDotNet/
+Assets/JsonDotNet.meta
+Assets/Samples/
+Assets/graphQl-client/
+Assets/Plugins/Excelsior/CSFHI/
+Assets/Plugins/Excelsior/Standard Assets/
+Assets/Plugins/Excelsior/Common/
+Assets/DNA/
+Assets/DNA
+Assets/Plugins/DNA/
+Assets/SCI-FI GUI Pack/
+Assets/Plugins/Excelsior/
+Assets/StreamingAssets/
+Assets/StreamingAssets.meta
+Assets/AnyUI/
+Assets/AnyUI
+Assets/Best HTTP/
