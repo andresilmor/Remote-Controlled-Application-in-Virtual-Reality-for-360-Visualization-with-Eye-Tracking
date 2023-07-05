@@ -1,3 +1,4 @@
+using BestHTTP.WebSocket;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -43,6 +44,9 @@ public class AppCommandCenter : MonoBehaviour {
             InternetConnectionStatus(false);
 
         }
+        WebSocket authChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSession, null,null, (WebSocket ws) => { ws.Send("Hello there"); });
+
+        
     }
 
     void Update() {
@@ -73,8 +77,12 @@ public class AppCommandCenter : MonoBehaviour {
     }
 
     public void EstablishConnection() {
+        WebSocket ws = APIManager.GetWebSocket(APIManager.VRHealSession);
+        ws.Open();
 
-
+        _connectButton.gameObject.SetActive(false);
+        _statusText.text = "Connecting...";
+        _statusText.gameObject.SetActive(true);
 
     }
 

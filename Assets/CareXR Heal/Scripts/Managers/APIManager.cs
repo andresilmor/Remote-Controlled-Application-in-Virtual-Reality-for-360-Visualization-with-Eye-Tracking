@@ -63,20 +63,13 @@ public static class APIManager {
 
     #region WebSockets Data
 
-    // Machine Learning Routes
-    private const string _mlRoute = "/ml";
+    // Virtual Reality Routes
+    private const string _vrRoute = "/vr";
+    private const string _healRoute = "/heal";
 
-    private const string _frameFullInference = "/emotionFaceRecon";
-    public static string FrameFullInference { get { return _mlRoute + _frameFullInference; } }
+    private const string _session = "/session";
 
-    // QRCode Routes
-    private const string _qrRoute = "/qr";
-
-    private const string _qrDecode = "/decode";
-    public static string QRDecode { get { return _qrRoute + _qrDecode; } }
-
-    private const string _qrAuth = "/auth";
-    public static string QRAuth { get { return _qrRoute + _qrAuth; } }
+    public static string VRHealSession { get { return _vrRoute + _healRoute + _session; } }
 
 
     private static List<string> _wsConnectionsPath;
@@ -85,8 +78,6 @@ public static class APIManager {
     public static Dictionary<string, WebSocket> WebSocketConnections { get { return _wsConnections; } }
 
 
-    // WS Connections
-    public static WebSocket wsFrameInference { get; private set; }
 
 
     #endregion
@@ -111,25 +102,14 @@ public static class APIManager {
     private static void AddWebSocket(string path, WebSocket webSocket) {
         _wsConnections.Add(path, webSocket);
 
-        /*
-        switch (path) {
-            case _frameFullInference:
-                wsFrameInference = webSocket;
-                break;
-
-            default:
-                _wsConnections.Add(webSocket);
-                _wsConnectionsPath.Add(path);
-                break;
-
-        }*/
+    
     }
 
 
     public static WebSocket CreateWebSocketConnection(string path, Action<WebSocket, string> onMessage = null, Action<byte[]> onBinary = null, Action<WebSocket> onOpen = null) {
         try {
             _wsConnections[path] = new WebSocket(new Uri(_websocketProtocol + _ip + _websocketPath + path));
-
+            Debug.Log(_websocketProtocol + _ip + _websocketPath + path);
             _wsConnections[path].OnMessage += (WebSocket webSocket, string data) => {
                 Debug.Log("API Manager: " + data);
                 onMessage?.Invoke(webSocket, data);
@@ -145,8 +125,8 @@ public static class APIManager {
             };
 
             _wsConnections[path].OnOpen += (WebSocket webSocket) => {
-                onOpen?.Invoke(webSocket);
                 Debug.Log("Connection [" + path + "] opened.");
+                onOpen?.Invoke(webSocket);
 
             };
 
