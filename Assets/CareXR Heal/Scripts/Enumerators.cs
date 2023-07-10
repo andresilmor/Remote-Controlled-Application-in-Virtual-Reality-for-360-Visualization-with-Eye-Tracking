@@ -61,4 +61,11 @@ public enum DetectionMode {
 
 }
 
+[SerializeField]
+public enum SessionState { 
+    Connecting,
+    Disconnected,
+    Initialized
+}
+
 
