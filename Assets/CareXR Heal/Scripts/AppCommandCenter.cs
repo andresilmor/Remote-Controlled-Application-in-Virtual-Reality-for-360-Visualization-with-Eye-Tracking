@@ -95,4 +95,10 @@ public class AppCommandCenter : MonoBehaviour {
         _statusText.text = messsage;
         _statusText.gameObject.SetActive(true);
     }
+
+    public void RestartScreen() {
+        _statusText.gameObject.SetActive(false);
+        _connectButton.gameObject.SetActive(true);
+    }
+
 }

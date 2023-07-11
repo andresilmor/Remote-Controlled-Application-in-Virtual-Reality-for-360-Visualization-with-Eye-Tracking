@@ -65,7 +65,8 @@ public enum DetectionMode {
 public enum SessionState { 
     Connecting,
     Disconnected,
-    Initialized
+    Initialized,
+    Connected
 }
 
 

@@ -9736,8 +9736,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: No Internet
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 71f7eb5577419744c8168b8a2bd863df, type: 2}
-  m_sharedMaterial: {fileID: 3440179737116930773, guid: 71f7eb5577419744c8168b8a2bd863df,
+  m_fontAsset: {fileID: 11400000, guid: ac9da7f6b02efb44b92e7484bb92b66c, type: 2}
+  m_sharedMaterial: {fileID: -2036906419762908727, guid: ac9da7f6b02efb44b92e7484bb92b66c,
     type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
