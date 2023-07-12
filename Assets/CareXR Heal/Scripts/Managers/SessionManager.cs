@@ -31,11 +31,14 @@ public static class SessionManager {
 
 
         session.OnClosed += (WebSocket webSocket, UInt16 code, string message) => {
+    
             DisconnectSession(true);
 
         };
 
         session.OnError += (WebSocket webSocket, string reason) => {
+            Debug.Log("3");
+
             DisconnectSession(true);
 
         };
@@ -48,12 +51,18 @@ public static class SessionManager {
     }
 
     private static void DisconnectSession(bool forcedDisconnection = false) {
-        if (!forcedDisconnection)
+
+        if (forcedDisconnection) {
+            Debug.Log("Forced Disconnection");
             APIManager.GetWebSocket(APIManager.VRHealSession).Close();
+
+
+        }
 
         if (SceneManager.GetActiveScene() != SceneManager.GetSceneAt(0)) 
             SceneTransitionManager.singleton.GoToScene(0);
 
+        APIManager.RemoveWebSocket(APIManager.VRHealSession);
         AppCommandCenter.Instance.RestartScreen();
 
     }

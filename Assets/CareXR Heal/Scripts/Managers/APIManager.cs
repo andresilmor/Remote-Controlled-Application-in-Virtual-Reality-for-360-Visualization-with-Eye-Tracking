@@ -90,6 +90,15 @@ public static class APIManager {
 
     #region WebSocket
 
+    public static void RemoveWebSocket(string path) {
+        if (_wsConnections.ContainsKey(path)) {
+            _wsConnections.Remove(path);
+        }
+        Debug.Log("Nop Contains");
+    
+
+    }
+
     public static WebSocket GetWebSocket(string path) {
         if (_wsConnections.ContainsKey(path)) {
             return _wsConnections[path];
