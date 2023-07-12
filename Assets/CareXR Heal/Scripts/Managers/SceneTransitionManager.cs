@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,30 +17,36 @@ public class SceneTransitionManager : MonoBehaviour
         singleton = this;
     }
 
-    public void GoToScene(int sceneIndex)
+    public void GoToScene(string sceneName, Action onLoadComplete = null)
     {
-        StartCoroutine(GoToSceneRoutine(sceneIndex));
+        StartCoroutine(GoToSceneRoutine(sceneName, onLoadComplete));
+
     }
 
-    IEnumerator GoToSceneRoutine(int sceneIndex)
+    IEnumerator GoToSceneRoutine(string sceneName, Action onLoadComplete = null)
     {
         fadeScreen.FadeOut();
         yield return new WaitForSeconds(fadeScreen.fadeDuration);
 
         //Launch the new scene
-        SceneManager.LoadScene(sceneIndex);
+        SceneManager.LoadScene(sceneName);
+        onLoadComplete?.Invoke();
     }
 
-    public void GoToSceneAsync(int sceneIndex)
+    public void GoToSceneAsync(string sceneName, Action onLoadComplete = null)
     {
-        StartCoroutine(GoToSceneAsyncRoutine(sceneIndex));
+        StartCoroutine(GoToSceneAsyncRoutine(sceneName, onLoadComplete));
     }
 
-    IEnumerator GoToSceneAsyncRoutine(int sceneIndex)
+    IEnumerator GoToSceneAsyncRoutine(string sceneName, Action onLoadComplete = null)
     {
         fadeScreen.FadeOut();
         //Launch the new scene
-        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+        AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
+
+        SessionManager.InStartScene = sceneName == "Start";
+        Debug.Log("Is in Start Scene? " + SessionManager.InStartScene);
+
         operation.allowSceneActivation = false;
 
         float timer = 0;
@@ -50,5 +57,6 @@ public class SceneTransitionManager : MonoBehaviour
         }
 
         operation.allowSceneActivation = true;
+        onLoadComplete?.Invoke();
     }
 }

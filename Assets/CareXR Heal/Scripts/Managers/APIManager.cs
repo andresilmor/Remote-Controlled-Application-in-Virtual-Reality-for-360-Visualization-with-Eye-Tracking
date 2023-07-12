@@ -116,7 +116,10 @@ public static class APIManager {
 
 
     public static WebSocket CreateWebSocketConnection(string path, Action<WebSocket, string> onMessage = null, Action<byte[]> onBinary = null, Action<WebSocket> onOpen = null) {
+
+
         try {
+
             _wsConnections[path] = new WebSocket(new Uri(_websocketProtocol + _ip + _websocketPath + path));
             Debug.Log(_websocketProtocol + _ip + _websocketPath + path);
             _wsConnections[path].OnMessage += (WebSocket webSocket, string data) => {

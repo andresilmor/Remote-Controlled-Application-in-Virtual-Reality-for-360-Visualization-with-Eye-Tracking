@@ -4,15 +4,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class AppCommandCenter : MonoBehaviour {
-    [Header("Buttons")]
-    [SerializeField] Button _connectButton;
 
-    [Header("Text")]
-    [SerializeField] TextMeshProUGUI _statusText;
 
     private bool _internetConnected = true;
 
@@ -57,18 +54,14 @@ public class AppCommandCenter : MonoBehaviour {
 
     private void InternetConnectionStatus(bool connected) {
         if (!connected && _internetConnected) {
-            _connectButton.gameObject.SetActive(false);
-
-            _statusText.text = "No Internet";
-            _statusText.gameObject.SetActive(true);
+            StartMenu.instance.DisplayScreenCentralMessage("No Internet");
 
             _internetConnected = false;
             return;
 
         } else if (connected && !_internetConnected) {
 
-            _statusText.gameObject.SetActive(false);
-            _connectButton.gameObject.SetActive(true);
+            StartMenu.instance.RestartScreen();
 
             _internetConnected = true;
 
@@ -77,10 +70,7 @@ public class AppCommandCenter : MonoBehaviour {
 
     }
 
-    public void EstablishConnection() {
-        SessionManager.Connect();
-
-    }
+    
 
 
 
@@ -90,15 +80,5 @@ public class AppCommandCenter : MonoBehaviour {
 
     }
 
-    public void DisplayScreenCentralMessage(string messsage) {
-        _connectButton.gameObject.SetActive(false);
-        _statusText.text = messsage;
-        _statusText.gameObject.SetActive(true);
-    }
-
-    public void RestartScreen() {
-        _statusText.gameObject.SetActive(false);
-        _connectButton.gameObject.SetActive(true);
-    }
 
 }
