@@ -67,7 +67,7 @@ public static class SessionManager {
         Debug.Log("Is in Start Scene? " + SessionManager.InStartScene);
         if (!InStartScene) {
             Debug.Log("Yo");
-            SceneManager.LoadScene("Start Scene");
+            SceneManager.LoadScene(SceneTransitionManager.Scenes["Start"]);
             //SceneTransitionManager.singleton.GoToSceneAsync("Start Scene", null);
         
         }
@@ -108,8 +108,6 @@ public static class SessionManager {
             switch (executionRequest["operation"].ToString()) {
                 case "loadScene":
                     Debug.Log("here loadScene");
-                    string loadScene = executionRequest["params"]["scene"].ToString();
-                    Debug.Log("Going to Scene: " + loadScene);
 
                     Action onLoaded = () => {
                         Debug.Log("Invoked");
@@ -118,7 +116,7 @@ public static class SessionManager {
 
                         JObject returnValues = new JObject();
 
-                        returnValues.Add("currentScene", loadScene);
+                        returnValues.Add("currentScene", SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()]);
                         executionRequest.Remove("params");
 
                         Debug.Log(returnValues);
@@ -135,13 +133,13 @@ public static class SessionManager {
 
                     };
 
-                    if (loadScene.Equals("Start")) {
-                        SceneManager.LoadScene("Start");
+                    if (executionRequest["params"]["scene"].ToString().Equals("Start")) {
+                        SceneManager.LoadScene(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()]);
                         onLoaded?.Invoke();
 
 
                     } else
-                        SceneTransitionManager.singleton.GoToSceneAsync(loadScene, onLoaded);
+                        SceneTransitionManager.singleton.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
 
 
                     break;
