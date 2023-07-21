@@ -50,6 +50,12 @@ public class AppCommandCenter : MonoBehaviour {
     void Update() {
         InternetConnectionStatus(Application.internetReachability != NetworkReachability.NotReachable);
 
+        if (Input.GetKeyDown("space") && SessionManager.SessionStatus.Equals(SessionState.Disconnected)) {
+            SessionManager.Connect();
+
+        }
+
+
     }
 
     private void InternetConnectionStatus(bool connected) {

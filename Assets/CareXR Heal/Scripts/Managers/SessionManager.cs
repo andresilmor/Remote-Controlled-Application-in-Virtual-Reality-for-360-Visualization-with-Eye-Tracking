@@ -11,6 +11,14 @@ using Debug = XRDebug;
 public static class SessionManager {
 
     private static SessionState _sessionStatus = SessionState.Disconnected;
+
+    public static SessionState SessionStatus {
+         get {
+            return _sessionStatus;  
+        }
+
+    }
+
     public static bool InStartScene = true;
 
     public static bool Connect() {
@@ -91,7 +99,7 @@ public static class SessionManager {
                 _sessionStatus = SessionState.Connected;
                 StartMenu.instance.DisplayScreenCentralMessage("Connected Successfully");
                 ws.OnMessage = null;
-                ws.OnMessage += ProcessRequest;
+                ws.OnMessage += ProcessMessage;
 
             }
 
@@ -99,11 +107,11 @@ public static class SessionManager {
 
     }
 
-    private static void ProcessRequest(WebSocket ws, string message) {
-        JObject response = JObject.Parse(message);
-
-        if (response["execute"] != null) {
-            JObject executionRequest =  JObject.Parse(response["execute"].ToString());
+    private static void ProcessMessage(WebSocket ws, string message) {
+        JObject jsonMessage = JObject.Parse(message);
+        Debug.Log(jsonMessage);
+        if (jsonMessage["execute"] != null) {
+            JObject executionRequest =  JObject.Parse(jsonMessage["execute"].ToString());
             Debug.Log(executionRequest);
             switch (executionRequest["operation"].ToString()) {
                 case "loadScene":
@@ -122,14 +130,14 @@ public static class SessionManager {
                         Debug.Log(returnValues);
                         executionRequest.Add("return", JToken.FromObject(returnValues));
                         Debug.Log(executionRequest);
-                        response["execute"] = executionRequest;
-                        Debug.Log(response);
+                        jsonMessage["execute"] = executionRequest;
+                        Debug.Log(jsonMessage);
                         Debug.Log("Sending");
-                        Debug.Log(response.ToString());
+                        Debug.Log(jsonMessage.ToString());
 
 
 
-                        ws.Send(JObject.Parse(response.ToString()).ToString());
+                        ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
 
                     };
 
@@ -146,6 +154,33 @@ public static class SessionManager {
 
 
             }
+
+        } else if (jsonMessage["warning"] != null) {
+
+            switch (jsonMessage["warning"]["message"].ToString()) {
+                case "protobuf_incoming":
+                    
+                    APIManager.ReceivingProtobuf = true;
+                    APIManager.ProtoInUse = jsonMessage["warning"]["proto"].ToString();
+
+                    JObject warningResponse = new JObject();
+                    warningResponse.Add("message", jsonMessage["warning"]["message"].ToString());
+                    warningResponse.Add("response", true);
+                    warningResponse.Add("to", jsonMessage["warning"]["to"].ToString());
+                    warningResponse.Add("blocked", jsonMessage["warning"]["blocked"]);
+
+                    JObject response = new JObject();
+                    response.Add("warning", warningResponse);
+                    ws.Send(JObject.Parse(response.ToString()).ToString());
+
+
+                    break;
+
+
+
+            }
+
+
 
         }
 

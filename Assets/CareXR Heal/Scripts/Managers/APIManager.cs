@@ -61,6 +61,14 @@ public static class APIManager {
 
     }
 
+    #region Protobuf Controller
+
+    public static bool ReceivingProtobuf = false;
+    public static string ProtoInUse = null;
+
+
+    #endregion
+
     #region WebSockets Data
 
     // Virtual Reality Routes
