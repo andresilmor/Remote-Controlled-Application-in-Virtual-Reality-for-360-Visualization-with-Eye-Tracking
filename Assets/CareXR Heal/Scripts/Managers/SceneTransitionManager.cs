@@ -6,23 +6,42 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransitionManager : MonoBehaviour {
     public FadeScreen fadeScreen;
-    public static SceneTransitionManager singleton;
+
+    private static SceneTransitionManager _instance = null;
+    public static SceneTransitionManager Instance {
+        get { return _instance; }
+        set {
+            if (_instance == null) {
+                _instance = value;
+            } else {
+                Destroy(value);
+            }
+        }
+    }
 
     public static Dictionary<string, int> Scenes = new Dictionary<string, int>()
         {
             { "Start", 0 },
             { "Lobby", 1 },
-            { "360_Session", 2 },
+            { "Panoramic Session", 2 },
 
         };
 
 
-    private void Awake()
-    {
-        if (singleton && singleton != this)
-            Destroy(singleton);
+    void Awake() {
+        if (_instance == null)
+            _instance = this;
+        else {
+            Destroy(gameObject);
+            return;
+        }
 
-        singleton = this;
+        DontDestroyOnLoad(gameObject);
+
+    }
+
+    private void Start() {
+        DontDestroyOnLoad(gameObject);
     }
 
     public void GoToScene(int sceneIndex, Action onLoadComplete = null)
@@ -39,6 +58,7 @@ public class SceneTransitionManager : MonoBehaviour {
         //Launch the new scene
         SceneManager.LoadScene(sceneIndex);
         onLoadComplete?.Invoke();
+
     }
 
     public void GoToSceneAsync(int sceneIndex, Action onLoadComplete = null)
@@ -51,6 +71,12 @@ public class SceneTransitionManager : MonoBehaviour {
         fadeScreen.FadeOut();
         //Launch the new scene
         AsyncOperation operation = SceneManager.LoadSceneAsync(sceneIndex);
+
+        operation.completed += (AsyncOperation ap) => {
+            onLoadComplete?.Invoke();
+            fadeScreen = FindAnyObjectByType<FadeScreen>();
+
+        };
 
         SessionManager.InStartScene = sceneIndex == 0;
         Debug.Log("Is in Start Scene? " + SessionManager.InStartScene);
@@ -65,6 +91,7 @@ public class SceneTransitionManager : MonoBehaviour {
         }
 
         operation.allowSceneActivation = true;
-        onLoadComplete?.Invoke();
+
+        
     }
 }

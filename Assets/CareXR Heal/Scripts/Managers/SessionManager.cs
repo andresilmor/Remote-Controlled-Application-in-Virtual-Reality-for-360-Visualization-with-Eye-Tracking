@@ -1,9 +1,11 @@
 using BestHTTP.WebSocket;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using ProtoBuf;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Debug = XRDebug;
@@ -76,7 +78,7 @@ public static class SessionManager {
         if (!InStartScene) {
             Debug.Log("Yo");
             SceneManager.LoadScene(SceneTransitionManager.Scenes["Start"]);
-            //SceneTransitionManager.singleton.GoToSceneAsync("Start Scene", null);
+            //SceneTransitionManager.Instance.GoToSceneAsync("Start Scene", null);
         
         }
 
@@ -100,11 +102,48 @@ public static class SessionManager {
                 StartMenu.instance.DisplayScreenCentralMessage("Connected Successfully");
                 ws.OnMessage = null;
                 ws.OnMessage += ProcessMessage;
+                ws.OnBinary += ProcessBinary;
 
             }
 
         };
 
+    }
+
+    private static void ProcessBinary(WebSocket webSocket, byte[] data) {
+        Debug.Log("binary");
+        if (APIManager.ReceivingProtobuf) {
+            switch (APIManager.ProtoInUse) {
+                case "ProtoImage":
+                    ProtoImage protoImage;
+                    using (var memoryStream = new MemoryStream(data)) {
+                        protoImage = Serializer.Deserialize<ProtoImage>(memoryStream);
+                    }
+
+                    if (protoImage != null && protoImage.image != null && protoImage.image.Length > 0) {
+                        Texture2D panoramicTexture = new Texture2D(2, 2);
+                        panoramicTexture.LoadImage(protoImage.image);
+                        Debug.Log("ProtoImage");
+                        Debug.Log(SceneTransitionManager.Instance.name);
+
+                        SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Panoramic Session"], () => {
+
+                            GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                            sphere.transform.position = new Vector3(0, 1.43f, 0);
+                            sphere.transform.localScale = new Vector3(9, 9, 9);
+
+                            PanoramicManager.PrepareHotspotMaterial(ref sphere, panoramicTexture);
+
+                        } );
+                      
+                    
+
+                    }
+
+                    break;
+
+            }
+        }
     }
 
     private static void ProcessMessage(WebSocket ws, string message) {
@@ -140,16 +179,17 @@ public static class SessionManager {
                         ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
 
                     };
-
+                    SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
+                    /*
                     if (executionRequest["params"]["scene"].ToString().Equals("Start")) {
-                        SceneManager.LoadScene(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()]);
+                        
                         onLoaded?.Invoke();
 
 
                     } else
-                        SceneTransitionManager.singleton.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
+                        SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
 
-
+                    */
                     break;
 
 

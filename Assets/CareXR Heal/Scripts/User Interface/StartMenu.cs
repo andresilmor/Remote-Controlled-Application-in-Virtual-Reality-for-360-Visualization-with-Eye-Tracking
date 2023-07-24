@@ -71,7 +71,7 @@ public class StartMenu : MonoBehaviour
     public void StartGame()
     {
         HideAll();
-        SceneTransitionManager.singleton.GoToSceneAsync(SceneTransitionManager.Scenes["Start"]);
+        SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Start"]);
     }
 
     public void HideAll()
