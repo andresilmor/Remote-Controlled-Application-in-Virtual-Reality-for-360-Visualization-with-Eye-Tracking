@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "com.tobii.xr.sdk": "file:C:/Users/andre/Downloads/TobiiXRSDK_3.0.1.179",
+    "io.realm.unity": "11.2.0",
+    "com.tobii.xr.sdk": "file:D:/PC/Desktop/IP/Packages/TobiiXRSDK_3.0.1.179",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.ide.rider": "3.0.21",
     "com.unity.ide.visualstudio": "2.0.18",
@@ -45,5 +46,14 @@
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
-  }
+  },
+  "scopedRegistries": [
+    {
+      "name": "NPM",
+      "url": "https://registry.npmjs.org",
+      "scopes": [
+        "io.realm.unity"
+      ]
+    }
+  ]
 }

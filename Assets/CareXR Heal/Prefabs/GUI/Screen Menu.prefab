@@ -674,13 +674,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af07645f3014a1347a5b1232afc24251, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  options: {fileID: 5998910860474866206}
-  _connectButton: {fileID: 5578225686881738174}
-  optionButton: {fileID: 5998910858941424154}
+  Options: {fileID: 5998910858941424156}
+  ConnectButton: {fileID: 5578225686881738174}
+  OptionButton: {fileID: 0}
   _statusText: {fileID: 5998910859357772926}
-  returnButtons:
-  - {fileID: 5998910859373116801}
-  - {fileID: 5998910861032107012}
+  ReturnButtons: []
 --- !u!1 &5998910859255911195
 GameObject:
   m_ObjectHideFlags: 0

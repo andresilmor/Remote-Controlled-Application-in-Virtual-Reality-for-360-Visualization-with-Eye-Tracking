@@ -4,7 +4,7 @@ namespace UnityEngine.XR.Content.Interaction
 {
     /// <summary>
     /// This component makes sure that the attached <c>Interactor</c> always have an interactable selected.
-    /// This is accomplished by forcing the <c>Interactor</c> to select a new <c>Interactable Prefab</c> instance whenever
+    /// This is accomplished by forcing the <c>Interactor</c> to select a new <c>Interactable Prefab</c> Instance whenever
     /// it loses the current selected interactable.
     /// </summary>
     [DisallowMultipleComponent]
@@ -17,7 +17,7 @@ namespace UnityEngine.XR.Content.Interaction
 
         [SerializeField]
         [Tooltip("If true then during Awake the Interactor \"Starting Selected Interactable\" will be overriden by an " +
-                 "instance of the \"Interactable Prefab\".")]
+                 "Instance of the \"Interactable Prefab\".")]
         bool m_OverrideStartingSelectedInteractable;
 
         [SerializeField]

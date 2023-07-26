@@ -8,14 +8,14 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class AppCommandCenter : MonoBehaviour {
+public class Controller : MonoBehaviour {
 
 
     private bool _internetConnected = true;
 
 
-    private static AppCommandCenter _instance = null;
-    public static AppCommandCenter Instance {
+    private static Controller _instance = null;
+    public static Controller Instance {
         get { return _instance; }
         set {
             if (_instance == null) {
@@ -60,14 +60,14 @@ public class AppCommandCenter : MonoBehaviour {
 
     private void InternetConnectionStatus(bool connected) {
         if (!connected && _internetConnected) {
-            StartMenu.instance.DisplayScreenCentralMessage("No Internet");
+            StartMenu.Instance.DisplayScreenCentralMessage("No Internet");
 
             _internetConnected = false;
             return;
 
         } else if (connected && !_internetConnected) {
 
-            StartMenu.instance.RestartScreen();
+            StartMenu.Instance.RestartScreen();
 
             _internetConnected = true;
 
@@ -76,8 +76,13 @@ public class AppCommandCenter : MonoBehaviour {
 
     }
 
-    
 
+    private void OnDisable() {
+        if (RealmManager.Realm != null) {
+            RealmManager.Realm.Dispose();
+
+        }
+    }
 
 
     private void OnDestroy() {

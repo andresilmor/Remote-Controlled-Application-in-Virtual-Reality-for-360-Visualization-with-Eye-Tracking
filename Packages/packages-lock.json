@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.tobii.xr.sdk": {
-      "version": "file:C:/Users/andre/Downloads/TobiiXRSDK_3.0.1.179",
+      "version": "file:D:/PC/Desktop/IP/Packages/TobiiXRSDK_3.0.1.179",
       "depth": 0,
       "source": "local",
       "dependencies": {
@@ -180,6 +180,13 @@
         "com.unity.inputsystem": "1.4.4"
       },
       "url": "https://packages.unity.com"
+    },
+    "io.realm.unity": {
+      "version": "11.2.0",
+      "depth": 0,
+      "source": "registry",
+      "dependencies": {},
+      "url": "https://registry.npmjs.org"
     },
     "com.unity.modules.ai": {
       "version": "1.0.0",

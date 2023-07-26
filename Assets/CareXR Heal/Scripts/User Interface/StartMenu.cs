@@ -7,24 +7,24 @@ using UnityEngine.UI;
 public class StartMenu : MonoBehaviour
 {
     [Header("UI Pages")]
-    public GameObject options;
+    public GameObject Options;
 
     [Header("Buttons")]
-    public Button _connectButton;
-    public Button optionButton;
+    public Button ConnectButton;
+    public Button OptionButton;
 
 
     [Header("Text")]
     [SerializeField] TextMeshProUGUI _statusText;
 
-    public List<Button> returnButtons;
+    public List<Button> ReturnButtons;
 
-    public static StartMenu instance;
+    public static StartMenu Instance;
     //AudioManager
 
     void Awake() {
-        if (instance == null)
-            instance = this;
+        if (Instance == null)
+            Instance = this;
         else {
             Destroy(gameObject);
             return;
@@ -48,14 +48,14 @@ public class StartMenu : MonoBehaviour
     }
 
     public void DisplayScreenCentralMessage(string messsage) {
-        _connectButton.gameObject.SetActive(false);
+        ConnectButton.gameObject.SetActive(false);
         _statusText.text = messsage;
         _statusText.gameObject.SetActive(true);
     }
 
     public void RestartScreen() {
         _statusText.gameObject.SetActive(false);
-        _connectButton.gameObject.SetActive(true);
+        ConnectButton.gameObject.SetActive(true);
     }
 
     public void EstablishConnection() {
@@ -76,19 +76,19 @@ public class StartMenu : MonoBehaviour
 
     public void HideAll()
     {
-        options.SetActive(false);
+        Options.SetActive(false);
     }
 
     public void EnableMainMenu()
     {
-        options.SetActive(false);
+        Options.SetActive(false);
     }
     public void EnableOption()
     {
-        options.SetActive(true);
+        Options.SetActive(true);
     }
     public void EnableAbout()
     {
-        options.SetActive(false);
+        Options.SetActive(false);
     }
 }

@@ -12,6 +12,11 @@ using Debug = XRDebug;
 
 public static class SessionManager {
 
+    private static string _applicationUID;
+    private static string _managerUID;
+    private static string _sessionChannel;
+    private static string _sessionUID;
+
     private static SessionState _sessionStatus = SessionState.Disconnected;
 
     public static SessionState SessionStatus {
@@ -25,7 +30,7 @@ public static class SessionManager {
 
     public static bool Connect() {
         Debug.Log("Gonna connect");
-        StartMenu.instance.DisplayScreenCentralMessage("Connecting...");
+        StartMenu.Instance.DisplayScreenCentralMessage("Connecting...");
 
 
         WebSocket session = APIManager.GetWebSocket(APIManager.VRHealSession); 
@@ -68,6 +73,9 @@ public static class SessionManager {
 
     private static void DisconnectSession(bool forcedDisconnection = false) {
         _sessionStatus = SessionState.Disconnected;
+
+        RealmManager.DisableDeviceSync();
+
         if (forcedDisconnection) {
             Debug.Log("Forced Disconnection");
 
@@ -77,13 +85,15 @@ public static class SessionManager {
         Debug.Log("Is in Start Scene? " + SessionManager.InStartScene);
         if (!InStartScene) {
             Debug.Log("Yo");
-            SceneManager.LoadScene(SceneTransitionManager.Scenes["Start"]);
+
+
+            //SceneManager.LoadScene(SceneTransitionManager.Scenes["Start"]);
             //SceneTransitionManager.Instance.GoToSceneAsync("Start Scene", null);
-        
+            SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Start"], null);
         }
 
 
-        StartMenu.instance.RestartScreen();
+        StartMenu.Instance.RestartScreen();
 
 
     }
@@ -91,7 +101,7 @@ public static class SessionManager {
     private static void DisplaySessionChannel(WebSocket ws, string message) {
         JObject response = JObject.Parse(message);
         _sessionStatus = SessionState.Initialized;
-        StartMenu.instance.DisplayScreenCentralMessage("Session ID:\n\n" + response["channel"]);
+        StartMenu.Instance.DisplayScreenCentralMessage("Session ID:\n\n" + response["channel"]);
 
         ws.OnMessage = null;
         ws.OnMessage += (WebSocket ws, string message) => {
@@ -99,7 +109,14 @@ public static class SessionManager {
 
             if (response["state"] != null && response["state"].ToString() == "connected") {
                 _sessionStatus = SessionState.Connected;
-                StartMenu.instance.DisplayScreenCentralMessage("Connected Successfully");
+
+                RealmManager.EnableDeviceSync();
+
+                _applicationUID = response["applicationUUID"].ToString();
+                _managerUID = response["managerUUID"].ToString();
+                _sessionChannel = response["channel"].ToString();
+
+                StartMenu.Instance.DisplayScreenCentralMessage("Connected Successfully");
                 ws.OnMessage = null;
                 ws.OnMessage += ProcessMessage;
                 ws.OnBinary += ProcessBinary;
@@ -109,9 +126,8 @@ public static class SessionManager {
         };
 
     }
-
-    private static void ProcessBinary(WebSocket webSocket, byte[] data) {
-        Debug.Log("binary");
+    public static GameObject sphere;
+    private static void ProcessBinary(WebSocket ws, byte[] data) {
         if (APIManager.ReceivingProtobuf) {
             switch (APIManager.ProtoInUse) {
                 case "ProtoImage":
@@ -123,20 +139,30 @@ public static class SessionManager {
                     if (protoImage != null && protoImage.image != null && protoImage.image.Length > 0) {
                         Texture2D panoramicTexture = new Texture2D(2, 2);
                         panoramicTexture.LoadImage(protoImage.image);
-                        Debug.Log("ProtoImage");
-                        Debug.Log(SceneTransitionManager.Instance.name);
 
+                        //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        //sphere.transform.position = new Vector3(0, 0, 0);//1.43f
+                        //sphere.transform.localScale = new Vector3(9, 9, 9);
+                        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        sphere.transform.position = new Vector3(0, 1.43f, 0);
+                        sphere.transform.localScale = Vector3.one * 9f;
+                        sphere.transform.rotation = Quaternion.identity;
+                        sphere.transform.Rotate(0, -179, 0, Space.Self);
+
+                        PanoramicManager.ApplySphereTexture(ref sphere, panoramicTexture);
+                        return;
                         SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Panoramic Session"], () => {
 
                             GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                             sphere.transform.position = new Vector3(0, 1.43f, 0);
                             sphere.transform.localScale = new Vector3(9, 9, 9);
-
-                            PanoramicManager.PrepareHotspotMaterial(ref sphere, panoramicTexture);
+                            sphere.transform.rotation = Quaternion.identity;
+                            PanoramicManager.ApplySphereTexture(ref sphere, panoramicTexture);
+                            Debug.Log("LOADED");
 
                         } );
-                      
-                    
+
+                        APIManager.ReceivingProtobuf = false;
 
                     }
 
@@ -149,6 +175,8 @@ public static class SessionManager {
     private static void ProcessMessage(WebSocket ws, string message) {
         JObject jsonMessage = JObject.Parse(message);
         Debug.Log(jsonMessage);
+
+
         if (jsonMessage["execute"] != null) {
             JObject executionRequest =  JObject.Parse(jsonMessage["execute"].ToString());
             Debug.Log(executionRequest);
@@ -190,6 +218,18 @@ public static class SessionManager {
                         SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
 
                     */
+                    break;
+
+                case "downloadHotspot":
+
+
+                    Debug.Log("HERE <Z- " + executionRequest["params"]["imageHeight"].ToString());
+
+                    PanoramicManager.MountHotspots(executionRequest["params"], () => {
+
+                    });
+
+
                     break;
 
 
