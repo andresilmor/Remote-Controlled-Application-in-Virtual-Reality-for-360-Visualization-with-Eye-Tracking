@@ -249,8 +249,9 @@ public static class PanoramicManager  {
 
         }
 
-
         _hotspotContainer.transform.position = new Vector3(0, 1.43f, 0);
+
+        onComplete?.Invoke();
 
         return;
 
@@ -415,7 +416,6 @@ public static class PanoramicManager  {
 
         }
         */
-        onComplete?.Invoke();
         
     }
 }

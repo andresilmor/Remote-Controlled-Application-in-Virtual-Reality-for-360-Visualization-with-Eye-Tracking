@@ -139,6 +139,11 @@ public static class SessionManager {
                     if (protoImage != null && protoImage.image != null && protoImage.image.Length > 0) {
                         Texture2D panoramicTexture = new Texture2D(2, 2);
                         panoramicTexture.LoadImage(protoImage.image);
+                        PanoramicManager.CurrentHotspotTexture = panoramicTexture;
+
+                        APIManager.ReceivingProtobuf = false;
+
+                        return;
 
                         //sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
                         //sphere.transform.position = new Vector3(0, 0, 0);//1.43f
@@ -161,8 +166,6 @@ public static class SessionManager {
                             Debug.Log("LOADED");
 
                         } );
-
-                        APIManager.ReceivingProtobuf = false;
 
                     }
 
@@ -225,9 +228,21 @@ public static class SessionManager {
 
                     Debug.Log("HERE <Z- " + executionRequest["params"]["imageHeight"].ToString());
 
-                    PanoramicManager.MountHotspots(executionRequest["params"], () => {
+                    SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Panoramic Session"], () => {
+
+                        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                        sphere.transform.position = new Vector3(0, 1.43f, 0);
+                        sphere.transform.localScale = new Vector3(9, 9, 9);
+                        sphere.transform.rotation = Quaternion.identity;
+                        PanoramicManager.ApplySphereTexture(ref sphere, PanoramicManager.CurrentHotspotTexture);
+                        PanoramicManager.MountHotspots(executionRequest["params"], () => {
+
+                            Debug.Log("LOADED");
+                        });
 
                     });
+
+                    
 
 
                     break;
