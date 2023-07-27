@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using UnityEngine.UIElements;
 
 public static class PanoramicManager  {
 
@@ -14,6 +15,10 @@ public static class PanoramicManager  {
     private static float _sphereRadius = 4.5f;
 
     private static GameObject _currentSphere = null;
+    private static GameObject _hotspotContainer = null;
+
+    public static int panoramicImageWidth = 0;
+    public static int panoramicImageHeight = 0;
 
     public static void ApplySphereTexture(ref GameObject sphere, Texture2D panoramicTexture) {
         // Reverse the normals to see the texture from inside the sphere
@@ -52,9 +57,6 @@ public static class PanoramicManager  {
 
     }
 
-
-    public static int panoramicImageWidth = 6912;
-    public static int panoramicImageHeight = 3456;
 
     // Diameter of the sphere
     public static float sphereDiameter = 9f;
@@ -114,6 +116,28 @@ public static class PanoramicManager  {
 
     }
 
+    private static Vector3 ConvertBoundingBoxCenterTo3D(JToken boundingBoxData) {
+        // Parse the bounding box JSON data
+        // Calculate the center position of the bounding box
+        float centerX = (float)boundingBoxData["x"] + (float)boundingBoxData["width"] / 2f;
+        float centerY = (float)boundingBoxData["y"] + (float)boundingBoxData["height"] / 2f;
+
+        // Convert 2D bounding box center to spherical coordinates
+        float theta = (centerY / panoramicImageHeight) * Mathf.PI;
+        float phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+
+        // Convert spherical coordinates to 3D position on the sphere's surface
+        float radius = sphereDiameter / 2f;
+        Vector3 spherePosition = new Vector3(
+            radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+        );
+
+        return spherePosition;
+
+    }
+
     private static Vector3 PixelToSphere(float x, float y) {
         // Normalize pixel coordinates to range [0, 1]
         float normalizedX = x / (float)panoramicImageWidth;
@@ -152,28 +176,94 @@ public static class PanoramicManager  {
 
     public static void MountHotspots(JToken data, Action onComplete) {
 
-        float imageHeight = 3456;
-        float imageWidth =  6912;
+        //float imageHeight = 3456;
+        //float imageWidth =  6912;
 
-        GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphere.transform.position = Vector3.zero;
-        sphere.transform.rotation = Quaternion.identity;
-        sphere.transform.localScale = Vector3.one * sphereDiameter;
+        panoramicImageWidth = (int)data["imageWidth"];
+        panoramicImageHeight = (int)data["imageHeight"];
 
-        Vector3 cubePosition1 = ConvertBoundingBoxTo3DPosition(boundingBoxJson);
-        Vector3 cubePosition2 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonTwo);
-        Vector3 cubePosition3 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonThree);
+        _hotspotContainer = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        _hotspotContainer.transform.position = Vector3.zero;
+        _hotspotContainer.transform.rotation = Quaternion.identity;
+        _hotspotContainer.transform.localScale = Vector3.one * sphereDiameter;
+
+        //Vector3 cubePosition1 = ConvertBoundingBoxTo3DPosition(boundingBoxJson);
+        //Vector3 cubePosition2 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonTwo);
+        //Vector3 cubePosition3 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonThree);
+
+        float radius = sphereDiameter / 2f;
+        float theta, phi, x, y;
+
+        foreach (JToken hotspot in data["mapping"]) {
+            Debug.Log("||----||");
+            Debug.Log(hotspot);
+
+            Vector3 centerPosition = ConvertBoundingBoxCenterTo3D(hotspot["boundingBox"]);
+
+            GameObject boundigBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+            x = (float)hotspot["boundingBox"]["x"];
+            y = (float)hotspot["boundingBox"]["y"];
+
+            theta = (y / panoramicImageHeight) * Mathf.PI;
+            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+
+            Vector3 x1y1 = new Vector3(
+                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                radius * Mathf.Cos(theta),
+                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+            );
+
+            x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
+            y = (float)hotspot["boundingBox"]["y"];
+
+            theta = (y / panoramicImageHeight) * Mathf.PI;
+            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+
+            Vector3 x2y1 = new Vector3(
+                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                radius * Mathf.Cos(theta),
+                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+            );
+
+            Vector3 width = x1y1 - x2y1;
+
+            x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
+            y = (float)hotspot["boundingBox"]["y"] + (float)hotspot["boundingBox"]["height"];
+
+            theta = (y / panoramicImageHeight) * Mathf.PI;
+            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+
+            Vector3 x2y2 = new Vector3(
+                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                radius * Mathf.Cos(theta),
+                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+            );
+
+            Vector3 height = x2y2 - x2y1;
+
+            boundigBox.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
+            boundigBox.gameObject.transform.position = centerPosition;
+            boundigBox.gameObject.transform.LookAt(new Vector3(0, 0, 0));
+            boundigBox.transform.parent = _hotspotContainer.transform;
+
+        }
+
+
+        _hotspotContainer.transform.position = new Vector3(0, 1.43f, 0);
+
+        return;
 
         BoundingBoxData boundingBoxTest = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJson);
         float centerX = boundingBoxTest.x ;
         float centerY = boundingBoxTest.y ;
-
+       
         // Convert 2D bounding box center to spherical coordinates
-        float theta = (centerY / panoramicImageHeight) * Mathf.PI;
-        float phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+         theta = (centerY / panoramicImageHeight) * Mathf.PI;
+         phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
 
         // Convert spherical coordinates to 3D position on the sphere's surface
-        float radius = sphereDiameter / 2f;
+         radius = sphereDiameter / 2f;
         Vector3 spherePosition = new Vector3(
             radius * Mathf.Sin(theta) * Mathf.Cos(phi),
             radius * Mathf.Cos(theta),
@@ -250,44 +340,39 @@ public static class PanoramicManager  {
         //sphereTest3.transform.localScale = Vector3.one * 0.1f;
         //sphereTest3.transform.parent = sphere.transform;
         //sphereTest3.gameObject.name = "x2, y2";
+        /*
+         * 
+ 
+       GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+       Vector3 width = spherePosition - spherePosition1;
 
-        GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        Vector3 width = spherePosition - spherePosition1;
+       Vector3 height = spherePosition3 - spherePosition1;
+       box.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
+       box.gameObject.transform.position = cubePosition1;
+       box.gameObject.transform.LookAt(new Vector3(0,0,0));
+       box.transform.parent = _hotspotContainer.transform;
 
-        Vector3 height = spherePosition3 - spherePosition1;
-        box.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
-        box.gameObject.transform.position = cubePosition1;
-        box.gameObject.transform.LookAt(new Vector3(0,0,0));
-        box.transform.parent = sphere.transform;
-
-        //----
-
-        GameObject cube1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube1.transform.position = cubePosition1;
-        //cube1.transform.localScale = Vector3.one * 0.1f;
-        BoundingBoxData boundingBox = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJson);
-
-        Vector3 cubeScale1 = CalculateCubeScale(boundingBox.width, boundingBox.height);
-        cube1.transform.localScale = Vector3.one * 0.1f;
-        cube1.transform.parent = sphere.transform;
-        //cube1.transform.LookAt(new Vector3(0, -179, 0));  
-
-        GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        BoundingBoxData boundingBox2 = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJsonTwo);
-        Vector3 cubeScale2 = CalculateCubeScale(boundingBox2.width, boundingBox2.height);
-        cube2.transform.localScale = Vector3.one * 0.1f;
-        cube2.transform.position = cubePosition2;
-        cube2.transform.parent = sphere.transform;
-
-        GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        BoundingBoxData boundingBox3 = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJsonThree);
-        Vector3 cubeScale3 = CalculateCubeScale(boundingBox3.width, boundingBox3.height);
-        cube3.transform.localScale = Vector3.one * 0.1f;
-        cube3.transform.position = cubePosition3;
-        cube3.transform.parent = sphere.transform;
+       //----
 
 
-        sphere.transform.position = new Vector3(0, 1.43f, 0);
+       GameObject cube1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+       cube1.transform.position = cubePosition1;
+       cube1.transform.localScale = Vector3.one * 0.1f;
+       cube1.transform.parent = _hotspotContainer.transform;
+       //cube1.transform.LookAt(new Vector3(0, -179, 0));  
+
+       GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+       cube2.transform.localScale = Vector3.one * 0.1f;
+       cube2.transform.position = cubePosition2;
+       cube2.transform.parent = _hotspotContainer.transform;
+
+       GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+       cube3.transform.localScale = Vector3.one * 0.1f;
+       cube3.transform.position = cubePosition3;
+       cube3.transform.parent = _hotspotContainer.transform;
+       */
+
+        _hotspotContainer.transform.position = new Vector3(0, 1.43f, 0);
 
         /*
         foreach (JToken hotspot in data["mapping"]) {
