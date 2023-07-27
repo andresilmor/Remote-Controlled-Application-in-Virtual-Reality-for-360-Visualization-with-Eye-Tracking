@@ -75,6 +75,13 @@ public static class PanoramicManager  {
         ""height"": 152
     }";
 
+    private static string boundingBoxJsonThree = @"{
+        ""x"": 1877,
+        ""y"": 1455,
+        ""width"": 478,
+        ""height"": 766
+    }";
+
     [System.Serializable]
     private class BoundingBoxData {
         public int x;
@@ -134,6 +141,16 @@ public static class PanoramicManager  {
         return new Vector3((float)(c_t * Math.Cos(phi)), (float)(c_t * Math.Sin(phi)), (float)Math.Sin(theta));
     }
 
+    private static Vector3 CalculateCubeScale(int boundingBoxWidth, int boundingBoxHeight) {
+        float scaleX = (float)panoramicImageWidth / (float)boundingBoxWidth;
+        float scaleY = (float)panoramicImageHeight / (float)boundingBoxHeight;
+        return new Vector3 (scaleX, scaleY, 0.1f);
+
+    }
+
+
+
+
     public static void MountHotspots(JToken data, Action onComplete) {
 
         float imageHeight = 3456;
@@ -144,22 +161,118 @@ public static class PanoramicManager  {
         sphere.transform.rotation = Quaternion.identity;
         sphere.transform.localScale = Vector3.one * sphereDiameter;
 
-        // Instantiate a cube GameObject
-        // Get the 3D position for the cube inside the sphere
         Vector3 cubePosition1 = ConvertBoundingBoxTo3DPosition(boundingBoxJson);
         Vector3 cubePosition2 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonTwo);
+        Vector3 cubePosition3 = ConvertBoundingBoxTo3DPosition(boundingBoxJsonThree);
 
-        // Instantiate the first cube at the 3D position on the sphere's surface for the first bounding box
+        BoundingBoxData boundingBoxTest = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJson);
+        float centerX = boundingBoxTest.x ;
+        float centerY = boundingBoxTest.y ;
+
+        // Convert 2D bounding box center to spherical coordinates
+        float theta = (centerY / panoramicImageHeight) * Mathf.PI;
+        float phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+
+        // Convert spherical coordinates to 3D position on the sphere's surface
+        float radius = sphereDiameter / 2f;
+        Vector3 spherePosition = new Vector3(
+            radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+        );
+
+        GameObject sphereTest = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphereTest.transform.position = spherePosition;
+        sphereTest.transform.localScale = Vector3.one * 0.1f;
+        sphereTest.transform.parent = sphere.transform;
+
+        centerX = boundingBoxTest.x + boundingBoxTest.width;
+        centerY = boundingBoxTest.y;
+
+        // Convert 2D bounding box center to spherical coordinates
+        theta = (centerY / panoramicImageHeight) * Mathf.PI;
+        phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+
+        // Convert spherical coordinates to 3D position on the sphere's surface
+        radius = sphereDiameter / 2f;
+        Vector3 spherePosition1 = new Vector3(
+            radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+        );
+
+        GameObject sphereTest1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphereTest1.transform.position = spherePosition1;
+        sphereTest1.transform.localScale = Vector3.one * 0.1f;
+        sphereTest1.transform.parent = sphere.transform;
+
+
+        centerX = boundingBoxTest.x ;
+        centerY = boundingBoxTest.y + boundingBoxTest.height;
+
+        // Convert 2D bounding box center to spherical coordinates
+        theta = (centerY / panoramicImageHeight) * Mathf.PI;
+        phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+
+        // Convert spherical coordinates to 3D position on the sphere's surface
+        radius = sphereDiameter / 2f;
+        Vector3 spherePosition2 = new Vector3(
+            radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+        );
+
+        GameObject sphereTest2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphereTest2.transform.position = spherePosition2;
+        sphereTest2.transform.localScale = Vector3.one * 0.1f;
+        sphereTest2.transform.parent = sphere.transform;
+
+
+        centerX = boundingBoxTest.x + boundingBoxTest.width;
+        centerY = boundingBoxTest.y + boundingBoxTest.height;
+
+        // Convert 2D bounding box center to spherical coordinates
+        theta = (centerY / panoramicImageHeight) * Mathf.PI;
+        phi = (centerX / panoramicImageWidth) * Mathf.PI * 2f;
+
+        // Convert spherical coordinates to 3D position on the sphere's surface
+        radius = sphereDiameter / 2f;
+        Vector3 spherePosition3 = new Vector3(
+            radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+            radius * Mathf.Cos(theta),
+            radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+        );
+
+        GameObject sphereTest3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        sphereTest3.transform.position = spherePosition3;
+        sphereTest3.transform.localScale = Vector3.one * 0.1f;
+        sphereTest3.transform.parent = sphere.transform;
+        //----
+
         GameObject cube1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube1.transform.position = cubePosition1;
-        cube1.transform.localScale = Vector3.one * 0.1f; // Adjust the scale as per your requirement
-        cube1.transform.parent = sphere.transform;
+        //cube1.transform.localScale = Vector3.one * 0.1f;
+        BoundingBoxData boundingBox = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJson);
 
-        // Instantiate the second cube at the 3D position on the sphere's surface for the second bounding box
+        Vector3 cubeScale1 = CalculateCubeScale(boundingBox.width, boundingBox.height);
+        cube1.transform.localScale = Vector3.one * 0.1f;
+        cube1.transform.parent = sphere.transform;
+        //cube1.transform.LookAt(new Vector3(0, -179, 0));  
+
         GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        BoundingBoxData boundingBox2 = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJsonTwo);
+        Vector3 cubeScale2 = CalculateCubeScale(boundingBox2.width, boundingBox2.height);
+        cube2.transform.localScale = Vector3.one * 0.1f;
         cube2.transform.position = cubePosition2;
-        cube2.transform.localScale = Vector3.one * 0.1f; // Adjust the scale as per your requirement
         cube2.transform.parent = sphere.transform;
+
+        GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        BoundingBoxData boundingBox3 = JsonUtility.FromJson<BoundingBoxData>(boundingBoxJsonThree);
+        Vector3 cubeScale3 = CalculateCubeScale(boundingBox3.width, boundingBox3.height);
+        cube3.transform.localScale = Vector3.one * 0.1f;
+        cube3.transform.position = cubePosition3;
+        cube3.transform.parent = sphere.transform;
+
 
         sphere.transform.position = new Vector3(0, 1.43f, 0);
 
