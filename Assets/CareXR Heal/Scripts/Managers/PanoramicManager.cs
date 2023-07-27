@@ -111,8 +111,9 @@ public static class PanoramicManager  {
         );
 
         return spherePosition;
+
     }
-    // Utility function to convert 2D pixel coordinates to 3D position on the sphere's surface
+
     private static Vector3 PixelToSphere(float x, float y) {
         // Normalize pixel coordinates to range [0, 1]
         float normalizedX = x / (float)panoramicImageWidth;
@@ -126,8 +127,6 @@ public static class PanoramicManager  {
         float c_t = Mathf.Cos(theta);
         return new Vector3(c_t * Mathf.Cos(phi), c_t * Mathf.Sin(phi), Mathf.Sin(theta)) * (sphereDiameter / 2f);
     }
-
-
 
     private static Vector3 Mercator(float x, float y, int w, int h) {
         // outside of valid pixel region
@@ -181,10 +180,11 @@ public static class PanoramicManager  {
             radius * Mathf.Sin(theta) * Mathf.Sin(phi)
         );
 
-        GameObject sphereTest = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphereTest.transform.position = spherePosition;
-        sphereTest.transform.localScale = Vector3.one * 0.1f;
-        sphereTest.transform.parent = sphere.transform;
+        //GameObject sphereTest = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphereTest.transform.position = spherePosition;
+        //sphereTest.transform.localScale = Vector3.one * 0.1f;
+        //sphereTest.transform.parent = sphere.transform;
+        //sphereTest.gameObject.name = "x1, y1";
 
         centerX = boundingBoxTest.x + boundingBoxTest.width;
         centerY = boundingBoxTest.y;
@@ -201,10 +201,11 @@ public static class PanoramicManager  {
             radius * Mathf.Sin(theta) * Mathf.Sin(phi)
         );
 
-        GameObject sphereTest1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphereTest1.transform.position = spherePosition1;
-        sphereTest1.transform.localScale = Vector3.one * 0.1f;
-        sphereTest1.transform.parent = sphere.transform;
+        //GameObject sphereTest1 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphereTest1.transform.position = spherePosition1;
+        //sphereTest1.transform.localScale = Vector3.one * 0.1f;
+        //sphereTest1.transform.parent = sphere.transform;
+        //sphereTest1.gameObject.name = "x2, y1";
 
 
         centerX = boundingBoxTest.x ;
@@ -222,10 +223,11 @@ public static class PanoramicManager  {
             radius * Mathf.Sin(theta) * Mathf.Sin(phi)
         );
 
-        GameObject sphereTest2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphereTest2.transform.position = spherePosition2;
-        sphereTest2.transform.localScale = Vector3.one * 0.1f;
-        sphereTest2.transform.parent = sphere.transform;
+        //GameObject sphereTest2 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphereTest2.transform.position = spherePosition2;
+        //sphereTest2.transform.localScale = Vector3.one * 0.1f;
+        //sphereTest2.transform.parent = sphere.transform;
+        //sphereTest2.gameObject.name = "x1, y2";
 
 
         centerX = boundingBoxTest.x + boundingBoxTest.width;
@@ -243,10 +245,21 @@ public static class PanoramicManager  {
             radius * Mathf.Sin(theta) * Mathf.Sin(phi)
         );
 
-        GameObject sphereTest3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
-        sphereTest3.transform.position = spherePosition3;
-        sphereTest3.transform.localScale = Vector3.one * 0.1f;
-        sphereTest3.transform.parent = sphere.transform;
+        //GameObject sphereTest3 = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+        //sphereTest3.transform.position = spherePosition3;
+        //sphereTest3.transform.localScale = Vector3.one * 0.1f;
+        //sphereTest3.transform.parent = sphere.transform;
+        //sphereTest3.gameObject.name = "x2, y2";
+
+        GameObject box = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        Vector3 width = spherePosition - spherePosition1;
+
+        Vector3 height = spherePosition3 - spherePosition1;
+        box.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
+        box.gameObject.transform.position = cubePosition1;
+        box.gameObject.transform.LookAt(new Vector3(0,0,0));
+        box.transform.parent = sphere.transform;
+
         //----
 
         GameObject cube1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
