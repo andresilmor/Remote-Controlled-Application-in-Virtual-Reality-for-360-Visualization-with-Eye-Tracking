@@ -76,9 +76,11 @@ public static class APIManager {
     private const string _healRoute = "/heal";
 
     private const string _session = "/session";
+    private const string _stream = "/stream";
+    private const string _panoramic = "/panoramic";
 
     public static string VRHealSession { get { return _vrRoute + _healRoute + _session; } }
-
+    public static string VRHealSessionStream { get { return _vrRoute + _healRoute + _session + _panoramic + _stream; } }
 
     private static List<string> _wsConnectionsPath;
 
@@ -102,7 +104,6 @@ public static class APIManager {
         if (_wsConnections.ContainsKey(path)) {
             _wsConnections.Remove(path);
         }
-        Debug.Log("Nop Contains");
     
 
     }
@@ -111,7 +112,6 @@ public static class APIManager {
         if (_wsConnections.ContainsKey(path)) {
             return _wsConnections[path];
         }
-        Debug.Log("Nop Contains");
         return null;
 
     }
@@ -131,7 +131,6 @@ public static class APIManager {
             _wsConnections[path] = new WebSocket(new Uri(_websocketProtocol + _ip + _websocketPath + path));
             Debug.Log(_websocketProtocol + _ip + _websocketPath + path);
             _wsConnections[path].OnMessage += (WebSocket webSocket, string data) => {
-                Debug.Log("API Manager: " + data);
                 onMessage?.Invoke(webSocket, data);
             };
 

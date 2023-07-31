@@ -75,11 +75,10 @@ public static class RealmManager {
     // DB Query
 
     public static PanoramicSessionEntity GetPanoramicSessionData(string uuid) {
-        Debug.Log(uuid);
         try { 
-        PanoramicSessionEntity data = _sessionMaterial.All<PanoramicSessionEntity>().Where(d => d.Uuid == uuid).FirstOrDefault();
+            PanoramicSessionEntity data = _sessionMaterial.All<PanoramicSessionEntity>().Where(d => d.Uuid == uuid).FirstOrDefault();
 
-        Debug.Log(data);
+            Debug.Log(data);
         } catch (Exception ex) {
             Debug.Log(ex.Message);
 
