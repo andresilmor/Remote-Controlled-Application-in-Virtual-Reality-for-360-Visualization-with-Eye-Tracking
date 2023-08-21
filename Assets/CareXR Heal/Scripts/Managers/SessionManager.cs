@@ -196,6 +196,7 @@ public static class SessionManager {
                         sphere.transform.position = new Vector3(0, 1.43f, 0);
                         sphere.transform.localScale = new Vector3(9, 9, 9);
                         sphere.transform.rotation = Quaternion.identity;
+                        sphere.transform.Rotate(Vector3.up, -180);
                         PanoramicManager.ApplySphereTexture(ref sphere, PanoramicManager.CurrentHotspotTexture);
                         PanoramicManager.MountHotspots(executionRequest["params"], () => {
                             SessionManager.StreamChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSessionStream,  (WebSocket ws, string message) => {
@@ -239,6 +240,11 @@ public static class SessionManager {
                     
 
 
+                    break;
+
+                case "startExercise":
+                    Debug.Log("startExercise");
+                    Debug.Log(message);
                     break;
 
 
