@@ -13,6 +13,8 @@ public class Controller : MonoBehaviour {
 
     private bool _internetConnected = true;
 
+    public GameObject TobiiXR_Initializer;
+
 
     private static Controller _instance = null;
     public static Controller Instance {

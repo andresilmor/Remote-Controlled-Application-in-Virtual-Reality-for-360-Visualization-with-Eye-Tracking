@@ -7,6 +7,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Debug = XRDebug;
@@ -15,8 +16,22 @@ public static class SessionManager {
 
     private static string _applicationUID;
     private static string _managerUID;
-    private static string _sessionChannel;
     private static string _sessionUID;
+    private static string _streamChannelUID;
+    private static string _streamReceiverUID;
+
+    public static ExerciseType ExerciseType;
+
+    private static PanoramicExercise _panoramicExercise;
+    public static PanoramicExercise PanoramicExercise {
+        get {
+            return _panoramicExercise;
+        }
+        private set {
+        
+            _panoramicExercise = value;
+        }
+    }
 
     private static WebSocket StreamChannel = null;
 
@@ -110,7 +125,7 @@ public static class SessionManager {
 
                 _applicationUID = response["applicationUUID"].ToString();
                 _managerUID = response["managerUUID"].ToString();
-                _sessionChannel = response["channel"].ToString();
+                _sessionUID = response["channel"].ToString();
 
                 StartMenu.Instance.DisplayScreenCentralMessage("Connected Successfully");
                 ws.OnMessage = null;
@@ -189,6 +204,7 @@ public static class SessionManager {
 
                 case "downloadHotspot":
 
+                    SessionManager.ExerciseType = ExerciseType.Panoramic;
 
                     SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Panoramic Session"], () => {
 
@@ -199,40 +215,28 @@ public static class SessionManager {
                         sphere.transform.Rotate(Vector3.up, -180);
                         PanoramicManager.ApplySphereTexture(ref sphere, PanoramicManager.CurrentHotspotTexture);
                         PanoramicManager.MountHotspots(executionRequest["params"], () => {
-                            SessionManager.StreamChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSessionStream,  (WebSocket ws, string message) => {
-                                JObject streamJsonMessage = JObject.Parse(message);
+                            JObject streamJsonMessage = JObject.Parse(message);
 
-                                JObject executionRequest = JObject.Parse(jsonMessage["execute"].ToString());
-                                executionRequest.Remove("params");
+                            JObject executionRequest = JObject.Parse(jsonMessage["execute"].ToString());
+                            executionRequest.Remove("params");
 
-                                JObject returnValues = new JObject();
-                                returnValues.Add("loaded", true);
+                            JObject returnValues = new JObject();
+                            returnValues.Add("loaded", true);
 
-                                executionRequest.Add("return", JToken.FromObject(returnValues));
-                                jsonMessage["execute"] = executionRequest;
+                            executionRequest.Add("return", JToken.FromObject(returnValues));
+                            jsonMessage["execute"] = executionRequest;
 
-                                jsonMessage["state"] = "running";
+                            jsonMessage["state"] = "running";
 
-                                jsonMessage.Add("streamChannel", streamJsonMessage["channel"].ToString());
+                            _sessionStatus = SessionState.Running;
 
-                                APIManager.GetWebSocket(APIManager.VRHealSession).Send(JObject.Parse(jsonMessage.ToString()).ToString());
+                            //jsonMessage.Add("streamChannel", streamJsonMessage["channel"].ToString());
 
-                                SessionManager.StreamChannel.OnMessage = null;
+                            APIManager.GetWebSocket(APIManager.VRHealSession).Send(JObject.Parse(jsonMessage.ToString()).ToString());
 
-                            }, null, (WebSocket ws) => {
-                                JObject initializeStream = new JObject();
-                                Debug.Log("------------");
-                                Debug.Log(jsonMessage);
-                                initializeStream.Add("state", "initialize");
-                                initializeStream.Add("streamerUUID", jsonMessage["applicationUUID"].ToString());
-
-
-                                ws.Send(JObject.Parse(initializeStream.ToString()).ToString());
-
-                            });
-
-                            SessionManager.StreamChannel.Open();
-
+                            /*
+                            
+                            */
                         });
 
                     });
@@ -244,7 +248,52 @@ public static class SessionManager {
 
                 case "startExercise":
                     Debug.Log("startExercise");
-                    Debug.Log(message);
+
+                    JObject streamJsonMessage = JObject.Parse(message);
+
+                    _streamChannelUID = streamJsonMessage["execute"]["params"]["streamChannel"].ToString();
+                    _streamReceiverUID = streamJsonMessage["execute"]["params"]["receiverUUID"].ToString();
+
+                    PanoramicExercise = (PanoramicExercise)(streamJsonMessage["execute"]["params"]["type"].ToObject<int>() - 1);
+
+                    SessionManager.StreamChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSessionStream, (WebSocket ws, string message) => {
+                        /*       JObject streamJsonMessage = JObject.Parse(message);
+
+                               JObject executionRequest = JObject.Parse(jsonMessage["execute"].ToString());
+                               executionRequest.Remove("params");
+
+                               JObject returnValues = new JObject();
+                               returnValues.Add("loaded", true);
+
+                               executionRequest.Add("return", JToken.FromObject(returnValues));
+                               jsonMessage["execute"] = executionRequest;
+
+                               jsonMessage["state"] = "running";
+
+                               //jsonMessage.Add("streamChannel", streamJsonMessage["channel"].ToString());
+
+                               APIManager.GetWebSocket(APIManager.VRHealSession).Send(JObject.Parse(jsonMessage.ToString()).ToString());
+
+                               SessionManager.StreamChannel.OnMessage = null;
+                        */
+
+                        Debug.Log(">>>>>>>>> Ok");
+
+                        EyeExerciseManager.EnableTobiiXR();
+
+                    }, null, (WebSocket ws) => {
+                        JObject initializeStream = new JObject();
+
+                        initializeStream.Add("state", "initialize");
+                        initializeStream.Add("receiverUUID", _streamReceiverUID);
+                        initializeStream.Add("streamChannel", _streamChannelUID);
+               
+                        ws.Send(JObject.Parse(initializeStream.ToString()).ToString());
+
+                    });
+
+                    SessionManager.StreamChannel.Open();
+
                     break;
 
 

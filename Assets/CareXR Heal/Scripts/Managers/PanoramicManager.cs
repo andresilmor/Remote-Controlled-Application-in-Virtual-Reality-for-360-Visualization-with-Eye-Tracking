@@ -108,60 +108,64 @@ public static class PanoramicManager  {
 
         foreach (JToken hotspot in data["mapping"]) {
 
-            Vector3 centerPosition = ConvertBoundingBoxCenterTo3D(hotspot["boundingBox"]);
+            if (hotspot["boundingBox"].HasValues) {
 
-            GameObject boundigBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                Vector3 centerPosition = ConvertBoundingBoxCenterTo3D(hotspot["boundingBox"]);
 
-            x = (float)hotspot["boundingBox"]["x"];
-            y = (float)hotspot["boundingBox"]["y"];
+                GameObject boundigBox = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-            theta = (y / panoramicImageHeight) * Mathf.PI;
-            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+                x = (float)hotspot["boundingBox"]["x"];
+                y = (float)hotspot["boundingBox"]["y"];
 
-            Vector3 x1y1 = new Vector3(
-                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
-                radius * Mathf.Cos(theta),
-                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
-            );
+                theta = (y / panoramicImageHeight) * Mathf.PI;
+                phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
 
-            x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
-            y = (float)hotspot["boundingBox"]["y"];
+                Vector3 x1y1 = new Vector3(
+                    radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                    radius * Mathf.Cos(theta),
+                    radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+                );
 
-            theta = (y / panoramicImageHeight) * Mathf.PI;
-            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+                x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
+                y = (float)hotspot["boundingBox"]["y"];
 
-            Vector3 x2y1 = new Vector3(
-                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
-                radius * Mathf.Cos(theta),
-                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
-            );
+                theta = (y / panoramicImageHeight) * Mathf.PI;
+                phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
 
-            Vector3 width = x1y1 - x2y1;
+                Vector3 x2y1 = new Vector3(
+                    radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                    radius * Mathf.Cos(theta),
+                    radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+                );
 
-            x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
-            y = (float)hotspot["boundingBox"]["y"] + (float)hotspot["boundingBox"]["height"];
+                Vector3 width = x1y1 - x2y1;
 
-            theta = (y / panoramicImageHeight) * Mathf.PI;
-            phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
+                x = (float)hotspot["boundingBox"]["x"] + (float)hotspot["boundingBox"]["width"];
+                y = (float)hotspot["boundingBox"]["y"] + (float)hotspot["boundingBox"]["height"];
 
-            Vector3 x2y2 = new Vector3(
-                radius * Mathf.Sin(theta) * Mathf.Cos(phi),
-                radius * Mathf.Cos(theta),
-                radius * Mathf.Sin(theta) * Mathf.Sin(phi)
-            );
+                theta = (y / panoramicImageHeight) * Mathf.PI;
+                phi = (x / panoramicImageWidth) * Mathf.PI * 2f;
 
-            Vector3 height = x2y2 - x2y1;
+                Vector3 x2y2 = new Vector3(
+                    radius * Mathf.Sin(theta) * Mathf.Cos(phi),
+                    radius * Mathf.Cos(theta),
+                    radius * Mathf.Sin(theta) * Mathf.Sin(phi)
+                );
 
-            boundigBox.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
-            boundigBox.gameObject.transform.position = centerPosition;
-            boundigBox.gameObject.transform.LookAt(new Vector3(0, 0, 0));
-            boundigBox.transform.parent = _hotspotContainer.transform;
+                Vector3 height = x2y2 - x2y1;
 
-            HotspotHandler hotspotHandler = boundigBox.AddComponent<HotspotHandler>();
+                boundigBox.gameObject.transform.localScale = new Vector3(width.magnitude, height.magnitude, 0.0005f);
+                boundigBox.gameObject.transform.position = centerPosition;
+                boundigBox.gameObject.transform.LookAt(new Vector3(0, 0, 0));
+                boundigBox.transform.parent = _hotspotContainer.transform;
 
-            boundigBox.gameObject.layer = LayerMask.NameToLayer("Hotspot");
+                HotspotHandler hotspotHandler = boundigBox.AddComponent<HotspotHandler>();
 
-            hotspotHandler.SetHotspotData(hotspot["data"]["alias"].ToString(), hotspot["uuid"].ToString(), hotspot["data"]["content"]);
+                boundigBox.gameObject.layer = LayerMask.NameToLayer("Hotspot");
+
+                hotspotHandler.SetHotspotData(hotspot["data"]["alias"].ToString(), hotspot["uuid"].ToString(), hotspot["data"]["content"]);
+
+            }
 
         }
 

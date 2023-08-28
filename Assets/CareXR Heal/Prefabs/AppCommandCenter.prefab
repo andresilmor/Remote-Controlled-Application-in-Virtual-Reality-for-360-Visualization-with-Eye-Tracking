@@ -44,5 +44,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 36c56c7e5b85ea4428f86cb02a331624, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _connectButton: {fileID: 0}
-  _statusText: {fileID: 0}
+  TobiiXR_Initializer: {fileID: 1483824241731922, guid: 596e593361e094a43934c013fa0b5764,
+    type: 3}

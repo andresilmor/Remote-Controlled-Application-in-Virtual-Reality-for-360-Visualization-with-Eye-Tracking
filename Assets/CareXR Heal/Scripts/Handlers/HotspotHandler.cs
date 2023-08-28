@@ -10,9 +10,6 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 {
     public static bool ToRecordEyeFocus = false;
 
-    public static Action<HotspotHandler> OnHasFocus;
-    public static Action<HotspotHandler> OnLostFocus;
-
     public bool IsBoundingBox = false;
 
     [SerializeField] string _alias;
@@ -47,10 +44,11 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
             return;
 
         if (hasFocus) {
-            OnHasFocus?.Invoke(this);
+            Debug.Log("Looked at: " + _alias);
+            EyeExerciseManager.OnHasFocus?.Invoke(this);
 
         } else {
-            OnLostFocus?.Invoke(this);
+            EyeExerciseManager.OnLostFocus?.Invoke(this);
 
         }
 

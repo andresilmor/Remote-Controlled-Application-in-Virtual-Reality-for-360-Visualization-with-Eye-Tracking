@@ -49,4 +49,21 @@ public enum SessionState {
     Running
 }
 
+[SerializeField]
+public enum ExerciseType {
+    Panoramic,
+    Model,
+
+}
+
+[SerializeField]
+public enum PanoramicExercise {
+    PointOfInterest,
+    Recognition,
+    LearningEye,
+    LearningController,
+
+
+}
+
 
