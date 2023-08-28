@@ -62,7 +62,7 @@ namespace UnityEngine.XR.Content.Rendering
         Color m_StartingOutlineColor = Color.black;
 
         [SerializeField]
-        [Tooltip("Time it takes to transition from start to end on highlight")]
+        [Tooltip("Countdown it takes to transition from start to end on highlight")]
         float m_TransitionDuration = 0.3f;
 
         [SerializeField]
@@ -77,7 +77,7 @@ namespace UnityEngine.XR.Content.Rendering
         float m_TransitionTimer = 0.0f;
 
         /// <summary>
-        /// Time it takes to transition from start to end on highlight
+        /// Countdown it takes to transition from start to end on highlight
         /// </summary>
         public float transitionDuration
         {

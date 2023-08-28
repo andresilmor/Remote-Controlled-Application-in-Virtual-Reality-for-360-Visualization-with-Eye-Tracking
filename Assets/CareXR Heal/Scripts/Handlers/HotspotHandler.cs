@@ -8,20 +8,38 @@ using Debug = XRDebug;
 
 public class HotspotHandler : MonoBehaviour, IGazeFocusable
 {
-    public static bool ToRecordEyeFocus = false;
 
-    public bool IsBoundingBox = false;
-
-    [SerializeField] string _alias;
-    [SerializeField] string _uuid;
+    public string Alias;
+    public string UUID;
     private JToken _content;
 
+    //------------------------------------------------------------------------------------------------------
+
+    public static bool ToRecordEyeFocus = false;
+
+    public float FocusSeconds;
+    public float Countdown;
+    public int FocusCount;
+
+    public bool HasFocus = false;
+
+    //------------------------------------------------------------------------------------------------------
+
+    public bool IsBoundingBox = false;
     private PanoramicManager.BoundingBoxData _boundingBoxData;
+
+    //------------------------------------------------------------------------------------------------------
+
+
+    public IEnumerator RunningCoroutine;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        ResetEyeTrackingData();
+        EyeTrackingManager.AddObjectFocus(this);
+
     }
 
     // Update is called once per frame
@@ -31,26 +49,33 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
     }
 
     public void SetHotspotData(string alias, string uuid, JToken content = null, PanoramicManager.BoundingBoxData boundingBoxData = null) {
-        _alias = alias;
-        _uuid = uuid;   
+        Alias = alias;
+        UUID = uuid;   
         _content = content; 
         _boundingBoxData = boundingBoxData;
 
     }
 
     public void GazeFocusChanged(bool hasFocus) {
+        HasFocus = hasFocus;
 
         if (!ToRecordEyeFocus)
             return;
 
         if (hasFocus) {
-            Debug.Log("Looked at: " + _alias);
-            EyeExerciseManager.OnHasFocus?.Invoke(this);
+            EyeTrackingManager.OnHasFocus?.Invoke(this);
 
         } else {
-            EyeExerciseManager.OnLostFocus?.Invoke(this);
+            EyeTrackingManager.OnLostFocus?.Invoke(this);
 
         }
+
+    }
+
+    public void ResetEyeTrackingData() {
+        if (ExerciseManager.PanoramicExercise == PanoramicExercise.Recognition)
+            FocusSeconds = 0;
+        Countdown = 0;
 
     }
 

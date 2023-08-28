@@ -17,24 +17,13 @@ public static class SessionManager {
     private static string _applicationUID;
     private static string _managerUID;
     private static string _sessionUID;
-    private static string _streamChannelUID;
-    private static string _streamReceiverUID;
-
+   
+  
     public static ExerciseType ExerciseType;
+    public static PanoramicExercise PanoramicExercise;
 
-    private static PanoramicExercise _panoramicExercise;
-    public static PanoramicExercise PanoramicExercise {
-        get {
-            return _panoramicExercise;
-        }
-        private set {
-        
-            _panoramicExercise = value;
-        }
-    }
-
-    private static WebSocket StreamChannel = null;
-
+    public static WebSocket StreamChannel = null;
+   
     private static SessionState _sessionStatus = SessionState.Disconnected;
 
     public static SessionState SessionStatus {
@@ -213,6 +202,7 @@ public static class SessionManager {
                         sphere.transform.localScale = new Vector3(9, 9, 9);
                         sphere.transform.rotation = Quaternion.identity;
                         sphere.transform.Rotate(Vector3.up, -180);
+                        sphere.gameObject.name = "360º Image";
                         PanoramicManager.ApplySphereTexture(ref sphere, PanoramicManager.CurrentHotspotTexture);
                         PanoramicManager.MountHotspots(executionRequest["params"], () => {
                             JObject streamJsonMessage = JObject.Parse(message);
@@ -251,48 +241,9 @@ public static class SessionManager {
 
                     JObject streamJsonMessage = JObject.Parse(message);
 
-                    _streamChannelUID = streamJsonMessage["execute"]["params"]["streamChannel"].ToString();
-                    _streamReceiverUID = streamJsonMessage["execute"]["params"]["receiverUUID"].ToString();
+                    ExerciseManager.SetupStreamingData(streamJsonMessage["execute"]["params"]["streamChannel"].ToString(), streamJsonMessage["execute"]["params"]["receiverUUID"].ToString());
+                    ExerciseManager.StartExercise(streamJsonMessage["execute"]["params"]["type"].ToObject<int>() - 1);
 
-                    PanoramicExercise = (PanoramicExercise)(streamJsonMessage["execute"]["params"]["type"].ToObject<int>() - 1);
-
-                    SessionManager.StreamChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSessionStream, (WebSocket ws, string message) => {
-                        /*       JObject streamJsonMessage = JObject.Parse(message);
-
-                               JObject executionRequest = JObject.Parse(jsonMessage["execute"].ToString());
-                               executionRequest.Remove("params");
-
-                               JObject returnValues = new JObject();
-                               returnValues.Add("loaded", true);
-
-                               executionRequest.Add("return", JToken.FromObject(returnValues));
-                               jsonMessage["execute"] = executionRequest;
-
-                               jsonMessage["state"] = "running";
-
-                               //jsonMessage.Add("streamChannel", streamJsonMessage["channel"].ToString());
-
-                               APIManager.GetWebSocket(APIManager.VRHealSession).Send(JObject.Parse(jsonMessage.ToString()).ToString());
-
-                               SessionManager.StreamChannel.OnMessage = null;
-                        */
-
-                        Debug.Log(">>>>>>>>> Ok");
-
-                        EyeExerciseManager.EnableTobiiXR();
-
-                    }, null, (WebSocket ws) => {
-                        JObject initializeStream = new JObject();
-
-                        initializeStream.Add("state", "initialize");
-                        initializeStream.Add("receiverUUID", _streamReceiverUID);
-                        initializeStream.Add("streamChannel", _streamChannelUID);
-               
-                        ws.Send(JObject.Parse(initializeStream.ToString()).ToString());
-
-                    });
-
-                    SessionManager.StreamChannel.Open();
 
                     break;
 

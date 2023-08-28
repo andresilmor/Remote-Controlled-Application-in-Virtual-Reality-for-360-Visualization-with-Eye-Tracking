@@ -6,7 +6,7 @@ namespace UnityEngine.XR.Content.Interaction
     public class DestroyObject : MonoBehaviour
     {
         [SerializeField]
-        [Tooltip("Time before destroying in seconds.")]
+        [Tooltip("Countdown before destroying in seconds.")]
         float m_Lifetime = 5f;
 
         void Start()

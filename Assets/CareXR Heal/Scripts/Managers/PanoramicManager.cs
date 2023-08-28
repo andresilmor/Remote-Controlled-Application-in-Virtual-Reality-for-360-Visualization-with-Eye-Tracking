@@ -102,6 +102,7 @@ public static class PanoramicManager  {
         _hotspotContainer.transform.position = Vector3.zero;
         _hotspotContainer.transform.rotation = Quaternion.identity;
         _hotspotContainer.transform.localScale = Vector3.one * sphereDiameter;
+        _hotspotContainer.gameObject.name = "Hotspot Container";
 
         float radius = sphereDiameter / 2f;
         float theta, phi, x, y;
@@ -162,6 +163,7 @@ public static class PanoramicManager  {
                 HotspotHandler hotspotHandler = boundigBox.AddComponent<HotspotHandler>();
 
                 boundigBox.gameObject.layer = LayerMask.NameToLayer("Hotspot");
+                boundigBox.gameObject.name = hotspot["data"]["alias"].ToString() + " [" + hotspot["uuid"].ToString() + "]";
 
                 hotspotHandler.SetHotspotData(hotspot["data"]["alias"].ToString(), hotspot["uuid"].ToString(), hotspot["data"]["content"]);
 

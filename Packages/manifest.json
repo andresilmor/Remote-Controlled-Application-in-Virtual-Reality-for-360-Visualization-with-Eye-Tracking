@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "io.realm.unity": "11.2.0",
+    "com.htc.upm.vive.openxr": "https://github.com/ViveSoftware/VIVE-OpenXR-PC.git?path=com.htc.upm.vive.openxr",
     "com.tobii.xr.sdk": "file:D:/PC/Desktop/IP/Packages/TobiiXRSDK_3.0.1.179",
     "com.unity.collab-proxy": "2.0.4",
     "com.unity.ide.rider": "3.0.21",
@@ -15,6 +15,7 @@
     "com.unity.xr.management": "4.3.3",
     "com.unity.xr.oculus": "3.3.0",
     "com.unity.xr.openxr": "1.7.0",
+    "io.realm.unity": "11.2.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
