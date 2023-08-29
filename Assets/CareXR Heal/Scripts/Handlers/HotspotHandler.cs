@@ -17,7 +17,7 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 
     public static bool ToRecordEyeFocus = false;
 
-    public float FocusSeconds;
+    public float FocusTime;
     public float Countdown;
     public int FocusCount;
 
@@ -74,7 +74,7 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 
     public void ResetEyeTrackingData() {
         if (ExerciseManager.PanoramicExercise == PanoramicExercise.Recognition)
-            FocusSeconds = 0;
+            FocusTime = 0;
         Countdown = 0;
 
     }

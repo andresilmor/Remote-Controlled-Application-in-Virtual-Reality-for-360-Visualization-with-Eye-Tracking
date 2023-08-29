@@ -183,11 +183,11 @@ MonoBehaviour:
   m_Name: SceneUnderstanding_OpenXR_API WSA
   m_EditorClassIdentifier: 
   m_enabled: 0
-  nameUi: 
-  version: 
-  featureIdInternal: 
-  openxrExtensionStrings: 
-  company: 
+  nameUi: Scene Understanding
+  version: 0.0.1
+  featureIdInternal: com.htc.openxr.sceneunderstanding.feature
+  openxrExtensionStrings: XR_MSFT_scene_understanding
+  company: HTC
   priority: 0
   required: 0
   m_XrInstance: 0
@@ -369,11 +369,11 @@ MonoBehaviour:
   m_Name: HtcViveHandInteractionInputFeature WSA
   m_EditorClassIdentifier: 
   m_enabled: 0
-  nameUi: 
-  version: 
-  featureIdInternal: 
-  openxrExtensionStrings: 
-  company: 
+  nameUi: HTC Vive hand interaction Support
+  version: 0.0.1
+  featureIdInternal: com.htc.openxr.feature.input.htcvivehandinteraction
+  openxrExtensionStrings: XR_HTC_hand_interaction
+  company: HTC
   priority: 0
   required: 0
 --- !u!114 &-1664080831527418589
@@ -452,12 +452,16 @@ MonoBehaviour:
   - {fileID: 5942999772664005751}
   - {fileID: 4360517857558066169}
   - {fileID: -8543179575590272767}
+  - {fileID: 1175662148476443008}
+  - {fileID: 5059228109898741269}
+  - {fileID: -1746206194126728309}
   - {fileID: -3571274239762382716}
   - {fileID: 9140127073437294064}
   - {fileID: -5222990648909331835}
   - {fileID: -109461370365531246}
   - {fileID: 4043573772895472014}
   - {fileID: 313672496880105119}
+  - {fileID: -5919440571522899581}
   - {fileID: 672876771813564292}
   m_renderMode: 1
   m_depthSubmissionMode: 0
@@ -654,11 +658,11 @@ MonoBehaviour:
   m_Name: HtcViveCosmosInputFeature WSA
   m_EditorClassIdentifier: 
   m_enabled: 0
-  nameUi: 
-  version: 
-  featureIdInternal: 
-  openxrExtensionStrings: 
-  company: 
+  nameUi: HTC Vive Cosmos Controller Support
+  version: 0.0.2
+  featureIdInternal: com.htc.openxr.feature.input.htcvivecosmos
+  openxrExtensionStrings: XR_HTC_vive_cosmos_controller_interaction XR_EXT_palm_pose
+  company: HTC
   priority: 0
   required: 0
 --- !u!114 &1737191695215419794
@@ -903,11 +907,11 @@ MonoBehaviour:
   m_Name: HtcViveFocus3InputFeature WSA
   m_EditorClassIdentifier: 
   m_enabled: 0
-  nameUi: 
-  version: 
-  featureIdInternal: 
-  openxrExtensionStrings: 
-  company: 
+  nameUi: HTC Vive Focus3 Controller Support
+  version: 0.0.2
+  featureIdInternal: com.htc.openxr.feature.input.htcvivefocus3
+  openxrExtensionStrings: XR_HTC_vive_focus3_controller_interaction XR_EXT_palm_pose
+  company: HTC
   priority: 0
   required: 0
 --- !u!114 &5862665799406061030

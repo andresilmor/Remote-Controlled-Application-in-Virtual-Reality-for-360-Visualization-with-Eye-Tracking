@@ -24,16 +24,23 @@ public static class EyeTrackingManager
 
     }
 
-    public static IEnumerator CountFocusTime(HotspotHandler hotspot) {
+    public static IEnumerator CountFocusTime(HotspotHandler hotspot, Action onStartingCount = null) {
+        byte startingCountStep = 0;
         while (hotspot.HasFocus) {
             if (hotspot.Countdown <= StartCountAt) {
                 hotspot.Countdown += Time.deltaTime;
 
             } else {
-                if (hotspot.FocusSeconds == 0)
+                if (startingCountStep == 0) {
+                    onStartingCount?.Invoke();
+                    startingCountStep += 1;
+
+                }
+
+                if (hotspot.FocusTime == 0)
                     hotspot.FocusCount += 1;
 
-                hotspot.FocusSeconds += Time.deltaTime;
+                hotspot.FocusTime += Time.deltaTime;
 
             }
             yield return null;

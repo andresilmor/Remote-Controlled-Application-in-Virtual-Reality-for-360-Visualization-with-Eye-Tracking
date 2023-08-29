@@ -11,6 +11,7 @@ public static class ExerciseManager
 {
     private static string _streamChannelUID;
     private static string _streamReceiverUID;
+    private static string _streamSenderUID;
 
     public static PanoramicExercise PanoramicExercise;
 
@@ -60,15 +61,16 @@ public static class ExerciseManager
         Debug.Log("------------------------------------------");
         Debug.Log(EyeTrackingManager.Hotspots.Count);
         for (int index = 0; index < EyeTrackingManager.Hotspots.Count; index += 1) {
-
             Debug.Log(EyeTrackingManager.Hotspots[index].Alias);
 
         }
-        Debug.Log("------------------------------------------");
 
+        Debug.Log("------------------------------------------");
 
         SessionManager.StreamChannel = APIManager.CreateWebSocketConnection(APIManager.VRHealSessionStream, (WebSocket ws, string message) => {
             Debug.Log(">>>>>>>>> Ok");
+
+            _streamSenderUID = JObject.Parse(message)["streamerUUID"].ToString();
 
             EyeTrackingManager.EnableTobiiXR();
 
@@ -86,19 +88,56 @@ public static class ExerciseManager
         SessionManager.StreamChannel.Open();
 
         EyeTrackingManager.OnHasFocus += (HotspotHandler hotspot) => {
-            hotspot.RunningCoroutine = EyeTrackingManager.CountFocusTime(hotspot);
+            if (SessionManager.StreamChannel != null && !SessionManager.StreamChannel.IsOpen && SessionManager.StreamChannel.OnOpen.GetInvocationList().Length > 0) {
+                SessionManager.StreamChannel.Open();
+
+            }
+
+            hotspot.RunningCoroutine = EyeTrackingManager.CountFocusTime(hotspot, () => {
+                if (SessionManager.StreamChannel != null && SessionManager.StreamChannel.IsOpen) {
+                    JObject message = new JObject();
+
+                    message.Add("state", "streaming");
+                    message.Add("streamerUUID", _streamSenderUID);
+                    message.Add("receiverUUID", _streamReceiverUID);
+                    message.Add("streamChannel", _streamChannelUID);
+                    message.Add("focusTarget", hotspot.UUID);
+                    message.Add("focusState", true);
+
+                    SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
+
+                }
+
+            });
+
             hotspot.StartCoroutine(hotspot.RunningCoroutine);
 
         };
 
         EyeTrackingManager.OnLostFocus += (HotspotHandler hotspot) => {
+            if (hotspot.FocusTime > EyeTrackingManager.StartCountAt) {
+                JObject message = new JObject();
+
+                message.Add("state", "streaming");
+                message.Add("streamerUUID", _streamSenderUID);
+                message.Add("receiverUUID", _streamReceiverUID);
+                message.Add("streamChannel", _streamChannelUID);
+                message.Add("focusTarget", hotspot.UUID);
+                message.Add("focusState", false);
+
+                SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
+
+            }
+
             hotspot.StopCoroutine(hotspot.RunningCoroutine);
          
-            hotspot.FocusSeconds += (float)System.Math.Round(hotspot.FocusSeconds, 2);
+            hotspot.FocusTime += (float)System.Math.Round(hotspot.FocusTime, 2);
 
             RegisterEyeTrackingData();
+
             if (PanoramicExercise == PanoramicExercise.Recognition)
                 hotspot.ResetEyeTrackingData();
+
 
         };
 
@@ -149,7 +188,7 @@ public static class ExerciseManager
                             data.Add("alias", EyeTrackingManager.Hotspots[index].Alias);
                             data.Add("uuid", EyeTrackingManager.Hotspots[index].UUID);
                             data.Add("focusCount", EyeTrackingManager.Hotspots[index].FocusCount);
-                            data.Add("focusTime", EyeTrackingManager.Hotspots[index].FocusSeconds);
+                            data.Add("focusTime", EyeTrackingManager.Hotspots[index].FocusTime);
 
                             (newLog["recognition"] as JArray).AddFirst(data);
 
@@ -193,11 +232,11 @@ public static class ExerciseManager
 
     private static int Partition(int low, int high) {
         HotspotHandler temp;
-        double pivot = EyeTrackingManager.Hotspots[high].FocusSeconds;
+        double pivot = EyeTrackingManager.Hotspots[high].FocusTime;
         int lowIndex = low - 1;
 
         for (int index = low; index < high; index += 1) {
-            if (EyeTrackingManager.Hotspots[index].FocusSeconds >= pivot) {
+            if (EyeTrackingManager.Hotspots[index].FocusTime >= pivot) {
                 lowIndex += 1;
 
                 temp = EyeTrackingManager.Hotspots[lowIndex];
