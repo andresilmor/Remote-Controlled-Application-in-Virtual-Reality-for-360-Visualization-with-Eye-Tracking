@@ -12,14 +12,6 @@
       },
       "hash": "8c0baa899ce4701ff5631f5fada705a8e0e5a97d"
     },
-    "com.tobii.xr.sdk": {
-      "version": "file:D:/PC/Desktop/IP/Packages/TobiiXRSDK_3.0.1.179",
-      "depth": 0,
-      "source": "local",
-      "dependencies": {
-        "com.unity.xr.management": "3.2.16"
-      }
-    },
     "com.unity.collab-proxy": {
       "version": "2.0.4",
       "depth": 0,

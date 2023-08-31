@@ -57,10 +57,11 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
     }
 
     public void GazeFocusChanged(bool hasFocus) {
-        HasFocus = hasFocus;
 
         if (!ToRecordEyeFocus)
             return;
+
+        HasFocus = hasFocus;
 
         if (hasFocus) {
             EyeTrackingManager.OnHasFocus?.Invoke(this);

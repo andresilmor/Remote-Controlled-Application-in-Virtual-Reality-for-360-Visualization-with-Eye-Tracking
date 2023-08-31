@@ -208,10 +208,14 @@ public static class SessionManager {
                             JObject streamJsonMessage = JObject.Parse(message);
 
                             JObject executionRequest = JObject.Parse(jsonMessage["execute"].ToString());
+
+                            ExerciseManager.ExerciseEnvUUID = executionRequest["params"]["uuid"].ToString();
+
                             executionRequest.Remove("params");
 
                             JObject returnValues = new JObject();
                             returnValues.Add("loaded", true);
+                            returnValues.Add("exerciseEnvUUID", ExerciseManager.ExerciseEnvUUID);
 
                             executionRequest.Add("return", JToken.FromObject(returnValues));
                             jsonMessage["execute"] = executionRequest;

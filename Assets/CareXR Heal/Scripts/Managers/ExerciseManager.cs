@@ -15,6 +15,7 @@ public static class ExerciseManager
 
     public static PanoramicExercise PanoramicExercise;
 
+    public static string ExerciseEnvUUID = "";
 
     public static JObject ExerciseLog = new JObject();
 
@@ -104,6 +105,7 @@ public static class ExerciseManager
                     message.Add("focusTarget", hotspot.UUID);
                     message.Add("focusState", true);
 
+                    Debug.Log("Sending True");
                     SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
 
                 }
@@ -124,7 +126,7 @@ public static class ExerciseManager
                 message.Add("streamChannel", _streamChannelUID);
                 message.Add("focusTarget", hotspot.UUID);
                 message.Add("focusState", false);
-
+                Debug.Log("Sending False");
                 SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
 
             }
