@@ -56,6 +56,15 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 
     }
 
+
+
+    public void ResetEyeTrackingData() {
+        if (ExerciseManager.PanoramicExercise == PanoramicExercise.Recognition)
+            FocusTime = 0;
+        Countdown = 0;
+
+    }
+
     public void GazeFocusChanged(bool hasFocus) {
 
         if (!ToRecordEyeFocus)
@@ -72,13 +81,4 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
         }
 
     }
-
-    public void ResetEyeTrackingData() {
-        if (ExerciseManager.PanoramicExercise == PanoramicExercise.Recognition)
-            FocusTime = 0;
-        Countdown = 0;
-
-    }
-
-
 }

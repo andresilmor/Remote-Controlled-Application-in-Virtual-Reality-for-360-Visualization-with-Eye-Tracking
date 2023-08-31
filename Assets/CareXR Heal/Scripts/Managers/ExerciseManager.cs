@@ -104,6 +104,7 @@ public static class ExerciseManager
                     message.Add("streamChannel", _streamChannelUID);
                     message.Add("focusTarget", hotspot.UUID);
                     message.Add("focusState", true);
+                    message.Add("focusAlias", hotspot.Alias);
 
                     Debug.Log("Sending True");
                     SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
@@ -117,7 +118,6 @@ public static class ExerciseManager
         };
 
         EyeTrackingManager.OnLostFocus += (HotspotHandler hotspot) => {
-            if (hotspot.FocusTime > EyeTrackingManager.StartCountAt) {
                 JObject message = new JObject();
 
                 message.Add("state", "streaming");
@@ -129,7 +129,7 @@ public static class ExerciseManager
                 Debug.Log("Sending False");
                 SessionManager.StreamChannel.Send(JObject.Parse(message.ToString()).ToString());
 
-            }
+            
 
             hotspot.StopCoroutine(hotspot.RunningCoroutine);
          
