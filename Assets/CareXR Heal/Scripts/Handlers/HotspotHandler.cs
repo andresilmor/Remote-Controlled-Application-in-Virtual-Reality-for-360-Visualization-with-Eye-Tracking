@@ -15,7 +15,7 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 
     //------------------------------------------------------------------------------------------------------
 
-    public static bool ToRecordEyeFocus = false;
+    public static bool ToProcessGazeChange = false;
 
     public float FocusTime;
     public float Countdown;
@@ -67,7 +67,7 @@ public class HotspotHandler : MonoBehaviour, IGazeFocusable
 
     public void GazeFocusChanged(bool hasFocus) {
 
-        if (!ToRecordEyeFocus)
+        if (!ToProcessGazeChange)
             return;
 
         HasFocus = hasFocus;

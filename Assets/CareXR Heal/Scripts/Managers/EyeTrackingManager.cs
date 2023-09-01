@@ -15,7 +15,7 @@ public static class EyeTrackingManager
 
     public static void EnableTobiiXR() {
         GameObject.Instantiate(Controller.Instance.TobiiXR_Initializer);
-        HotspotHandler.ToRecordEyeFocus = true;
+        HotspotHandler.ToProcessGazeChange = true;
 
     }
 

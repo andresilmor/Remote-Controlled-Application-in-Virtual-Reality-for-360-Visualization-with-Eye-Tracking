@@ -19,7 +19,7 @@ public static class ExerciseManager
 
     public static JObject ExerciseLog = new JObject();
 
-    public static  void StartExercise(int exerciseType) {
+    public static void StartExercise(int exerciseType) {
 
         switch (SessionManager.ExerciseType) {
             case ExerciseType.Panoramic:
@@ -53,10 +53,141 @@ public static class ExerciseManager
 
     }
 
+
+
+    public static void PauseExercise(Action onPaused = null) {
+        switch (SessionManager.ExerciseType) {
+            case ExerciseType.Panoramic:
+
+                switch (PanoramicExercise) {
+                    case PanoramicExercise.Recognition:
+                        HotspotHandler.ToProcessGazeChange = false;
+                        onPaused?.Invoke();
+                        break;
+
+                    default:
+                        Debug.Log("PanoramicExercise NOT IMPLEMENTED");
+
+                        break;
+
+                }
+
+                break;
+
+            case ExerciseType.Model:
+                // Just for effect
+                break;
+
+            default:
+                Debug.Log("ExerciseType NOT IMPLEMENTED");
+                break;
+
+        }
+    }
+
+    public static void ContinueExercise(Action onContinue = null) {
+        switch (SessionManager.ExerciseType) {
+            case ExerciseType.Panoramic:
+
+                switch (PanoramicExercise) {
+                    case PanoramicExercise.Recognition:
+                        HotspotHandler.ToProcessGazeChange = true;
+                        onContinue?.Invoke();
+                        break;
+
+                    default:
+                        Debug.Log("PanoramicExercise NOT IMPLEMENTED");
+
+                        break;
+
+                }
+
+                break;
+
+            case ExerciseType.Model:
+                // Just for effect
+                break;
+
+            default:
+                Debug.Log("ExerciseType NOT IMPLEMENTED");
+                break;
+
+        }
+    }
+
+    public static void RestartExercise(Action onRestart = null) {
+        switch (SessionManager.ExerciseType) {
+            case ExerciseType.Panoramic:
+
+                switch (PanoramicExercise) {
+                    case PanoramicExercise.Recognition:
+                        ExerciseLog = new JObject(
+                            new JProperty("recognition", new JArray(
+
+                                )));
+                        onRestart?.Invoke();
+                        break;
+
+                    default:
+                        Debug.Log("PanoramicExercise NOT IMPLEMENTED");
+
+                        break;
+
+                }
+
+                break;
+
+            case ExerciseType.Model:
+                // Just for effect
+                break;
+
+            default:
+                Debug.Log("ExerciseType NOT IMPLEMENTED");
+                break;
+
+        }
+    }
+
+
+    public static void StopExercise(Action onStop) {
+        switch (SessionManager.ExerciseType) {
+            case ExerciseType.Panoramic:
+
+                switch (PanoramicExercise) {
+                    case PanoramicExercise.Recognition:
+                        SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Lobby"], onStop);
+                        break;
+
+                    default:
+                        Debug.Log("PanoramicExercise NOT IMPLEMENTED");
+
+                        break;
+
+                }
+
+                break;
+
+            case ExerciseType.Model:
+                // Just for effect
+                break;
+
+            default:
+                Debug.Log("ExerciseType NOT IMPLEMENTED");
+                break;
+
+        }
+    }
+
+    //-----------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------
+
     internal static void SetupStreamingData(string streamChannelUID, string streamReceiverUID) {
         _streamChannelUID = streamChannelUID;
         _streamReceiverUID = streamReceiverUID;
     }
+
+    //-----------------------------------------------------------------------------------------------------------------------
+    //-----------------------------------------------------------------------------------------------------------------------
 
     private static void StartRecognitionExercise() {
         Debug.Log("------------------------------------------");
@@ -256,4 +387,5 @@ public static class ExerciseManager
         return lowIndex + 1;
 
     }
+
 }

@@ -164,7 +164,7 @@ public static class SessionManager {
                 case "loadScene":
                     Debug.Log("here loadScene");
 
-                    Action onLoaded = () => {
+                    SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], () => {
                         Debug.Log("Invoked");
                         Debug.Log(executionRequest);
                         Debug.Log(executionRequest);
@@ -186,8 +186,7 @@ public static class SessionManager {
 
                         ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
 
-                    };
-                    SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes[executionRequest["params"]["scene"].ToString()], onLoaded);
+                    });
                  
                     break;
 
@@ -248,6 +247,80 @@ public static class SessionManager {
                     ExerciseManager.SetupStreamingData(streamJsonMessage["execute"]["params"]["streamChannel"].ToString(), streamJsonMessage["execute"]["params"]["receiverUUID"].ToString());
                     ExerciseManager.StartExercise(streamJsonMessage["execute"]["params"]["type"].ToObject<int>() - 1);
 
+
+                    break;
+
+
+                case "pauseExercise":
+                    ExerciseManager.PauseExercise(() => {
+
+                        JObject returnValues = new JObject();
+                        returnValues.Add("isPaused", true);
+
+                        executionRequest.Remove("params");
+
+                        executionRequest.Add("return", JToken.FromObject(returnValues));
+                        jsonMessage["execute"] = executionRequest;
+                        Debug.Log(jsonMessage.ToString());
+
+                        ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
+
+                    });
+
+
+                    break;
+
+                case "continueExercise":
+                    ExerciseManager.ContinueExercise(() => {
+
+                        JObject returnValues = new JObject();
+                        returnValues.Add("continued", true);
+
+                        executionRequest.Remove("params");
+
+                        executionRequest.Add("return", JToken.FromObject(returnValues));
+                        jsonMessage["execute"] = executionRequest;
+                        Debug.Log(jsonMessage.ToString());
+
+                        ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
+
+                    });
+
+                    break;
+
+                case "restartExercise":
+                    ExerciseManager.RestartExercise(() => {
+
+                        JObject returnValues = new JObject();
+                        returnValues.Add("hasRestarted", true);
+
+                        executionRequest.Remove("params");
+
+                        executionRequest.Add("return", JToken.FromObject(returnValues));
+                        jsonMessage["execute"] = executionRequest;
+                        Debug.Log(jsonMessage.ToString());
+
+                        ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
+
+                    });
+
+                    break;
+
+                case "stopExercise":
+                    ExerciseManager.StopExercise(() => {
+
+                        JObject returnValues = new JObject();
+                        returnValues.Add("hasStopped", true);
+
+                        executionRequest.Remove("params");
+
+                        executionRequest.Add("return", JToken.FromObject(returnValues));
+                        jsonMessage["execute"] = executionRequest;
+                        Debug.Log(jsonMessage.ToString());
+
+                        ws.Send(JObject.Parse(jsonMessage.ToString()).ToString());
+
+                    });
 
                     break;
 
