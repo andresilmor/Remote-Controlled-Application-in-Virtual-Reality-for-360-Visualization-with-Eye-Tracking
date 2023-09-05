@@ -39,12 +39,36 @@ public static class SessionManager {
         Debug.Log("Gonna connect");
         StartMenu.Instance.DisplayScreenCentralMessage("Connecting...");
 
+        WebSocket session = APIManager.CreateWebSocketConnection(APIManager.VRHealSession, (WebSocket ws, string message) => {
+            JObject response = JObject.Parse(message);
+            _sessionStatus = SessionState.Initialized;
+            Debug.Log(response["channel"]);
+            StartMenu.Instance.DisplayScreenCentralMessage("Session ID:\n\n" + response["channel"]);
 
-        WebSocket session = APIManager.GetWebSocket(APIManager.VRHealSession); 
-          
-        session = APIManager.CreateWebSocketConnection(APIManager.VRHealSession, null, null, (WebSocket ws) => {
             ws.OnMessage = null;
-            ws.OnMessage += DisplaySessionChannel;
+            ws.OnMessage += (WebSocket ws, string message) => {
+                JObject response = JObject.Parse(message);
+
+                if (response["state"] != null && response["state"].ToString() == "connected") {
+                    _sessionStatus = SessionState.Connected;
+
+                    RealmManager.EnableDeviceSync();
+
+                    _applicationUID = response["applicationUUID"].ToString();
+                    _managerUID = response["managerUUID"].ToString();
+                    _sessionUID = response["channel"].ToString();
+
+                    StartMenu.Instance.DisplayScreenCentralMessage("Connected Successfully");
+                    ws.OnMessage = null;
+                    ws.OnMessage += ProcessMessage;
+                    ws.OnBinary += ProcessBinary;
+
+                }
+
+            };
+
+        }, null, (WebSocket ws) => {
+     
 
             ws.Send(JObject.Parse("{ \"state\" : \"initialize\" }").ToString());
 
@@ -95,35 +119,6 @@ public static class SessionManager {
 
         StartMenu.Instance.RestartScreen();
 
-
-    }
-
-    private static void DisplaySessionChannel(WebSocket ws, string message) {
-        JObject response = JObject.Parse(message);
-        _sessionStatus = SessionState.Initialized;
-        StartMenu.Instance.DisplayScreenCentralMessage("Session ID:\n\n" + response["channel"]);
-
-        ws.OnMessage = null;
-        ws.OnMessage += (WebSocket ws, string message) => {
-            JObject response = JObject.Parse(message);
-
-            if (response["state"] != null && response["state"].ToString() == "connected") {
-                _sessionStatus = SessionState.Connected;
-
-                RealmManager.EnableDeviceSync();
-
-                _applicationUID = response["applicationUUID"].ToString();
-                _managerUID = response["managerUUID"].ToString();
-                _sessionUID = response["channel"].ToString();
-
-                StartMenu.Instance.DisplayScreenCentralMessage("Connected Successfully");
-                ws.OnMessage = null;
-                ws.OnMessage += ProcessMessage;
-                ws.OnBinary += ProcessBinary;
-
-            }
-
-        };
 
     }
 
@@ -311,6 +306,8 @@ public static class SessionManager {
 
                         JObject returnValues = new JObject();
                         returnValues.Add("hasStopped", true);
+                        returnValues.Add("exerciseLog", JToken.FromObject(ExerciseManager.ExerciseLog));
+
 
                         executionRequest.Remove("params");
 

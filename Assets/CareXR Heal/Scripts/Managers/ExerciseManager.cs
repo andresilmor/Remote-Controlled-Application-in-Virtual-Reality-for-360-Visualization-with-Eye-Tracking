@@ -303,6 +303,8 @@ public static class ExerciseManager
 
     }
 
+    public static int registerID = 0;
+
     private static void RegisterData() {
         switch (SessionManager.ExerciseType) {
             case ExerciseType.Panoramic:
@@ -322,6 +324,7 @@ public static class ExerciseManager
                             data.Add("uuid", EyeTrackingManager.Hotspots[index].UUID);
                             data.Add("focusCount", EyeTrackingManager.Hotspots[index].FocusCount);
                             data.Add("focusTime", EyeTrackingManager.Hotspots[index].FocusTime);
+                            data.Add("id", registerID++);
 
                             (newLog["recognition"] as JArray).AddFirst(data);
 
