@@ -159,7 +159,7 @@ public static class ExerciseManager
                         break;
 
                     default:
-                        Debug.Log("PanoramicExercise NOT IMPLEMENTED");
+                        SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Lobby"]);
 
                         break;
 

@@ -321,6 +321,15 @@ public static class SessionManager {
 
                     break;
 
+                case "endSession":
+                    Debug.Log("Ending Session");
+                    SceneTransitionManager.Instance.GoToSceneAsync(SceneTransitionManager.Scenes["Start"], () => {
+                        ws.Close();
+
+
+                    });
+                    break;
+
 
             }
 
