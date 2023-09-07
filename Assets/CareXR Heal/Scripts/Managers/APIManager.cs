@@ -37,7 +37,7 @@ public static class APIManager {
 
     [Header("API Address:")]
     //string address = "_websocketProtocol://192.168.1.238:8000";
-    [SerializeField] static string _ip = "8b02-193-136-194-58.ngrok-free.app";
+    [SerializeField] static string _ip = "473b-193-136-194-58.ngrok-free.app";
     [SerializeField] static string _port = ""; //For when used with localhost server :8000
 
     [Header("Root Paths:")]
