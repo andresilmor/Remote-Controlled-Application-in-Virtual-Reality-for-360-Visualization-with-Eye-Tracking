@@ -130,6 +130,7 @@ public static class SessionManager {
                     ProtoImage protoImage;
                     using (var memoryStream = new MemoryStream(data)) {
                         protoImage = Serializer.Deserialize<ProtoImage>(memoryStream);
+
                     }
 
                     if (protoImage != null && protoImage.image != null && protoImage.image.Length > 0) {
